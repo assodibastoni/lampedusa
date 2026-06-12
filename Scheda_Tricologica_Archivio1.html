@@ -1466,8 +1466,27 @@
     const AP = [{ n: 'stato_cute', l: 'Stato cute', a: 'Ottimo', b: 'Critico' }, { n: 'densita', l: 'Densit\u00e0', a: 'Alta', b: 'Bassa' }, { n: 'spessore', l: 'Spessore fusto', a: 'Spesso', b: 'Sottile' }, { n: 'sebo', l: 'Sebo', a: 'Scarso', b: 'Eccessivo' }, { n: 'desquamazione', l: 'Desquamazione', a: 'Assente', b: 'Severa' }, { n: 'miniaturizzazione', l: 'Miniaturizzazione', a: 'Assente', b: 'Marcata' }, { n: 'infiammazione', l: 'Infiammazione cute', a: 'Assente', b: 'Severa' }, { n: 'idratazione', l: 'Idratazione', a: 'Ottima', b: 'Scarsa' }, { n: 'ph_cute', l: 'pH cute', a: 'Acido', b: 'Alcalino' }];
     let cid = null, vid = null, ro = false, dirty = false;
     let _arch = {}, _ag = {}, _dh = null, _fsOk = false;
+    let _deletedClients = new Set();
     function gA() { return _arch; }
-    function sA(a) { _arch = a; if (_dh) _fsWrite('archivio.json', a); else localStorage.setItem(SK, JSON.stringify(a)); }
+    // Merge current in-memory state with latest on-disk version, then write.
+    // Prevents one device overwriting another device's new entries.
+    async function _mergeSave() {
+      if(!_dh) return;
+      try {
+        const onDisk = await _fsRead('archivio.json', null);
+        if(onDisk && typeof onDisk === 'object') {
+          const merged = {...onDisk};
+          for(const [k,v] of Object.entries(_arch)) merged[k] = v;
+          for(const id of _deletedClients) delete merged[id];
+          if(Object.keys(merged).length !== Object.keys(_arch).length) {
+            _arch = merged; rCL(); rFU();
+          }
+        }
+      } catch {}
+      _fsWrite('archivio.json', _arch);
+    }
+    function sA(a) { _arch = a; if(_dh) _mergeSave(); else localStorage.setItem(SK, JSON.stringify(a)); }
+    function _saDirect(a) { _arch = a; _deletedClients = new Set(); if(_dh) _fsWrite('archivio.json',a); else localStorage.setItem(SK,JSON.stringify(a)); }
     function gid() { return '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6); }
     function bG(items, id, pfx) {
       const g = document.getElementById(id);
@@ -1627,7 +1646,7 @@
       event.stopPropagation();
       const arch = gA(), name = cN(arch[id] || {});
       if (!confirm('Eliminare definitivamente "' + name + '" e tutte le sue visite' + (_dh ? ' e le foto dalla cartella' : '') + '?')) return;
-      delete arch[id]; sA(arch);
+      delete arch[id]; _deletedClients.add(id); sA(arch);
       if (cid === id) { cid = null; vid = null; clF(); sRO(false); mS(); document.getElementById('vbar').classList.remove('on'); document.getElementById('photo-sect').classList.remove('on'); if(_dh) _fsWrite('autosave.json',{cid:null,vid:null,data:{}}); else localStorage.removeItem(AK); }
       _deleteClientDir(id);
       rCL(); toast('Cliente eliminato');
@@ -1652,7 +1671,7 @@
     function expJSON() { const data = cD(), nome = (data.fields && data.fields.nome_cognome || 'cliente').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_'), date = data.fields && data.fields.data_consulenza || new Date().toISOString().split('T')[0]; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'Scheda_' + nome + '_' + date + '.json' }); a.click(); URL.revokeObjectURL(a.href); toast('Esportato'); }
     function impJSON(e) { const file = e.target.files[0]; if (!file) return; const r = new FileReader(); r.onload = ev => { try { const p = JSON.parse(ev.target.result); if (!p.fields) { toast('Usa Ripristina per i backup archivio'); return; } if (dirty && !confirm('Sovrascrivere?')) return; clF(); aD(p); vid = null; mU(); toast('Scheda importata'); } catch { alert('Errore nel file JSON.'); } }; r.readAsText(file); e.target.value = ''; }
     function bkpAll() { const arch = gA(), count = Object.keys(arch).length; if (!count) { toast('Nessun cliente'); return; } const date = new Date().toISOString().split('T')[0]; const blob = new Blob([JSON.stringify(arch, null, 2)], { type: 'application/json' }); const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'Archivio_Tricologico_' + date + '.json' }); a.click(); URL.revokeObjectURL(a.href); toast('Backup: ' + count + ' clienti'); }
-    function restBkp(e) { const file = e.target.files[0]; if (!file) return; const r = new FileReader(); r.onload = ev => { try { const p = JSON.parse(ev.target.result); const keys = Object.keys(p); if (!keys.length) { alert('File vuoto.'); return; } if (!confirm('Ripristinare ' + keys.length + ' clienti? L\'archivio attuale sar\u00e0 sovrascritto.')) return; sA(p); cid = null; vid = null; clF(); sRO(false); mS(); document.getElementById('vbar').classList.remove('on'); document.getElementById('photo-sect').classList.remove('on'); const si=document.getElementById('sbsi'); if(si) si.value=''; rCL(); toast('Ripristino: ' + keys.length + ' clienti'); } catch { alert('Errore nel file JSON.'); } }; r.readAsText(file); e.target.value = ''; }
+    function restBkp(e) { const file = e.target.files[0]; if (!file) return; const r = new FileReader(); r.onload = ev => { try { const p = JSON.parse(ev.target.result); const keys = Object.keys(p); if (!keys.length) { alert('File vuoto.'); return; } if (!confirm('Ripristinare ' + keys.length + ' clienti? L\'archivio attuale sar\u00e0 sovrascritto.')) return; _saDirect(p); cid = null; vid = null; clF(); sRO(false); mS(); document.getElementById('vbar').classList.remove('on'); document.getElementById('photo-sect').classList.remove('on'); const si=document.getElementById('sbsi'); if(si) si.value=''; rCL(); toast('Ripristino: ' + keys.length + ' clienti'); } catch { alert('Errore nel file JSON.'); } }; r.readAsText(file); e.target.value = ''; }
     function switchTab(tab) {
       document.getElementById('panel-clienti').style.display = tab === 'clienti' ? 'flex' : 'none';
       document.getElementById('panel-scadenze').style.display = tab === 'scadenze' ? 'flex' : 'none';
@@ -1922,6 +1941,7 @@
     function closeFSModal() { document.getElementById('fs-modal-ov').classList.remove('open'); }
 
     async function _loadFolder() {
+      _deletedClients = new Set();
       const archFile=await _fsRead('archivio.json',null);
       const agFile=await _fsRead('agenda.json',null);
       if(archFile!==null) { _arch=archFile; } else { await _fsWrite('archivio.json',_arch); }
