@@ -1343,7 +1343,7 @@
       </div>
       <div class="fs-modal-body">
         <div class="fs-modal-desc">Seleziona una cartella sul tuo dispositivo dove salvare archivio, prenotazioni e lavoro in corso. I file vengono scritti direttamente sul disco — nessun dato nel browser.</div>
-        <div class="fs-modal-note"><b>Sincronizzazione tra dispositivi:</b> per usare i dati su pi&ugrave; dispositivi, scegli una cartella gi&agrave; sincronizzata con <b>Google Drive</b>, <b>Dropbox</b>, <b>OneDrive</b> o <b>iCloud Drive</b>.</div>
+        <div class="fs-modal-note"><b>Google Drive / Dropbox:</b> apri il selettore &rarr; naviga nella cartella sincronizzata di Google Drive o Dropbox sul tuo computer &rarr; clicca &ldquo;Seleziona&rdquo;. I dati verranno sincronizzati automaticamente.<br><br><b>Brave / Firefox:</b> se il pulsante non funziona, apri il file con <b>Chrome</b> o <b>Edge</b>.</div>
         <div class="fs-modal-cur" id="fs-modal-cur">
           <div class="fs-modal-cur-lbl">Cartella connessa</div>
           <div class="fs-modal-cur-val" id="fs-modal-cur-val"></div>
@@ -1762,7 +1762,7 @@
       else if(cur) { cur.style.display='none'; }
       document.getElementById('fs-modal-ov').classList.add('open');
     }
-    function closeFSModal() { document.getElementById('fs-modal-ov').classList.remove('open'); }
+    function closeFSModal() { document.getElementById('fs-modal-ov').classList.remove('open'); localStorage.setItem('_fsInfoSeen','1'); }
 
     async function _loadFolder() {
       const archFile=await _fsRead('archivio.json',null);
@@ -1776,10 +1776,11 @@
     }
 
     async function connectFolder() {
+      if(!window.showDirectoryPicker) { toast('Usa Chrome o Edge per selezionare una cartella'); return; }
       try {
         const h=await window.showDirectoryPicker({mode:'readwrite'});
         _dh=h; await _idbSet('dh',h);
-        await _loadFolder();
+        await _loadFolder(); _upFSStatus();
         closeFSModal(); toast('Cartella connessa');
       } catch(e) { if(e.name!=='AbortError') toast('Errore accesso cartella'); }
     }
@@ -1794,17 +1795,20 @@
     async function initApp() {
       bG(A1,'ag','an1'); bG(A2,'ag2','an2'); bA();
       window.addEventListener('beforeunload',e=>{ if(dirty){ e.preventDefault(); e.returnValue=''; } });
-      if(!window.showDirectoryPicker) { _loadFromLS(); _upFSStatus(); return; }
-      _upFSStatus();
+      _loadFromLS(); _upFSStatus();
+      if(!window.showDirectoryPicker) {
+        if(!localStorage.getItem('_fsInfoSeen')) openFSModal();
+        return;
+      }
       try {
         const h=await _idbGet('dh');
         if(h) {
           let p=await h.queryPermission({mode:'readwrite'});
           if(p==='prompt') p=await h.requestPermission({mode:'readwrite'});
-          if(p==='granted') { _dh=h; await _loadFolder(); return; }
+          if(p==='granted') { _dh=h; await _loadFolder(); _upFSStatus(); return; }
         }
       } catch {}
-      _loadFromLS(); _upFSStatus(); openFSModal();
+      _upFSStatus(); openFSModal();
     }
     initApp();
   </script>
