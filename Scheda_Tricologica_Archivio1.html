@@ -1550,6 +1550,7 @@
       mS(); uTB(client); rVB(client); cSB(); toast('Caricato: ' + cN(client)); window.scrollTo({ top: 0, behavior: 'smooth' });
       document.getElementById('photo-sect').style.display='';
       renderPhotos(id);
+      if(_dh) _writeScheda(id);
     }
     function rVB(client) {
       const bar = document.getElementById('vbar'), list = document.getElementById('vblist');
@@ -1600,6 +1601,7 @@
       if (!vid) { vid = gid(); client.visits.push({ id: vid, date: vd, savedAt: new Date().toISOString(), data }); }
       else { const idx = client.visits.findIndex(v => v.id === vid); if (idx > -1) client.visits[idx] = { id: vid, date: vd, savedAt: new Date().toISOString(), data }; else client.visits.push({ id: vid, date: vd, savedAt: new Date().toISOString(), data }); }
       sA(arch); mS(); uTB(client); rVB(client); toast(nome ? 'Salvato: ' + nome : 'Visita salvata');
+      if(_dh) _writeScheda(cid);
     }
     function delC(id, event) {
       event.stopPropagation();
@@ -1878,6 +1880,7 @@
       const agFile=await _fsRead('agenda.json',null);
       if(archFile!==null) { _arch=archFile; } else { await _fsWrite('archivio.json',_arch); }
       if(agFile!==null) { _ag=agFile; } else { await _fsWrite('agenda.json',_ag); }
+      try { _cDirMap=await _fsRead('_clienti_dirs.json',{}); } catch { _cDirMap={}; }
       localStorage.removeItem(SK); localStorage.removeItem(AGK); localStorage.removeItem(AK);
       _fsOk=true; _upFSStatus(); rCL(); rFU();
       const as=await _fsRead('autosave.json',null);
@@ -1902,29 +1905,49 @@
     }
 
     // ── PHOTO FUNCTIONS ──
-    async function _photoDir(clientId, create=false) {
+    let _cDirMap = {};
+    function _safeName(s) { return (s||'').replace(/[<>:"/\\|?*\x00-\x1f]/g,'').replace(/\.+$/,'').trim(); }
+    async function _getClientDir(clientId, create=false) {
       if(!_dh) return null;
       try {
-        const base=await _dh.getDirectoryHandle('foto',{create});
-        return await base.getDirectoryHandle(clientId,{create});
+        const base=await _dh.getDirectoryHandle('clienti',{create:true});
+        let fn=_cDirMap[clientId];
+        if(!fn) {
+          const arch=gA(), client=arch[clientId];
+          let name=_safeName(client?.profile?.nome_cognome||'');
+          if(!name) name=clientId.slice(-8);
+          const used=new Set(Object.values(_cDirMap));
+          if(used.has(name)) name=name+' '+clientId.slice(-4);
+          _cDirMap[clientId]=name; await _fsWrite('_clienti_dirs.json',_cDirMap); fn=name;
+        }
+        return await base.getDirectoryHandle(fn,{create});
       } catch { return null; }
     }
+    async function _writeScheda(clientId) {
+      const dir=await _getClientDir(clientId,true); if(!dir) return;
+      const arch=gA(), client=arch[clientId]; if(!client) return;
+      try { const fh=await dir.getFileHandle('scheda.json',{create:true}),w=await fh.createWritable(); await w.write(JSON.stringify({cid:clientId,...client},null,2)); await w.close(); } catch {}
+    }
     async function _listPhotos(clientId) {
-      const dir=await _photoDir(clientId); if(!dir) return [];
-      const names=[];
-      for await (const [name] of dir.entries()) { if(/\.(jpg|jpeg|png|webp|gif|heic)$/i.test(name)) names.push(name); }
-      return names.sort();
+      const dir=await _getClientDir(clientId); if(!dir) return [];
+      const results=[];
+      try {
+        for await (const [dname,dh] of dir.entries()) {
+          if(dh.kind==='directory'&&/^\d{4}-\d{2}-\d{2}$/.test(dname)) {
+            for await (const [fname] of dh.entries()) { if(/\.(jpg|jpeg|png|webp|gif|heic)$/i.test(fname)) results.push({date:dname,filename:fname}); }
+          }
+        }
+      } catch {}
+      return results.sort((a,b)=>a.date.localeCompare(b.date)||a.filename.localeCompare(b.filename));
     }
-    async function _readPhoto(clientId,filename) {
-      try { const dir=await _photoDir(clientId); if(!dir) return null; return await (await dir.getFileHandle(filename)).getFile(); } catch { return null; }
+    async function _readPhoto(clientId,dateStr,filename) {
+      try { const dir=await _getClientDir(clientId); if(!dir) return null; const dd=await dir.getDirectoryHandle(dateStr); return await (await dd.getFileHandle(filename)).getFile(); } catch { return null; }
     }
-    async function _writePhoto(clientId,filename,file) {
-      const dir=await _photoDir(clientId,true); if(!dir) return false;
-      try { const fh=await dir.getFileHandle(filename,{create:true}),w=await fh.createWritable(); await w.write(file); await w.close(); return true; } catch { return false; }
+    async function _writePhoto(clientId,dateStr,filename,file) {
+      try { const dir=await _getClientDir(clientId,true),dd=await dir.getDirectoryHandle(dateStr,{create:true}),fh=await dd.getFileHandle(filename,{create:true}),w=await fh.createWritable(); await w.write(file); await w.close(); return true; } catch { return false; }
     }
-    async function _deletePhoto(clientId,filename) {
-      const dir=await _photoDir(clientId); if(!dir) return;
-      try { await dir.removeEntry(filename); } catch {}
+    async function _deletePhoto(clientId,dateStr,filename) {
+      try { const dir=await _getClientDir(clientId),dd=await dir.getDirectoryHandle(dateStr); await dd.removeEntry(filename); } catch {}
     }
     function triggerPhotoUpload() {
       if(!_dh) { toast('Connetti una cartella per usare le foto'); return; }
@@ -1934,13 +1957,12 @@
     async function handlePhotoUpload(ev) {
       const files=[...ev.target.files]; ev.target.value=''; if(!files.length||!cid) return;
       const today=new Date().toISOString().split('T')[0];
-      const existing=await _listPhotos(cid);
-      let count=existing.filter(n=>n.startsWith(today)).length, saved=0;
+      const existing=(await _listPhotos(cid)).filter(p=>p.date===today);
+      let count=existing.length, saved=0;
       for(const file of files) {
         const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
         count++;
-        const fn=`${today}_${String(count).padStart(3,'0')}.${ext}`;
-        if(await _writePhoto(cid,fn,file)) saved++;
+        if(await _writePhoto(cid,today,`${String(count).padStart(3,'0')}.${ext}`,file)) saved++;
       }
       if(saved) { toast(`${saved} foto salvata${saved>1?'e':''}`); renderPhotos(cid); }
       else toast('Errore salvataggio foto');
@@ -1949,20 +1971,19 @@
       const grid=document.getElementById('photo-grid'); if(!grid) return;
       grid.innerHTML='';
       if(!_dh) { grid.innerHTML='<div class="photo-msg">Connetti una cartella per salvare e visualizzare le foto.</div>'; return; }
-      const names=await _listPhotos(clientId);
-      if(!names.length) { grid.innerHTML='<div class="photo-msg">Nessuna foto — clicca "Aggiungi foto" per iniziare.</div>'; return; }
-      for(const fname of names) {
-        const blob=await _readPhoto(clientId,fname); if(!blob) continue;
+      const photos=await _listPhotos(clientId);
+      if(!photos.length) { grid.innerHTML='<div class="photo-msg">Nessuna foto — clicca "Aggiungi foto" per iniziare.</div>'; return; }
+      for(const {date,filename} of photos) {
+        const blob=await _readPhoto(clientId,date,filename); if(!blob) continue;
         const url=URL.createObjectURL(blob);
-        const day=fname.slice(0,10);
         const div=document.createElement('div'); div.className='photo-thumb';
-        div.innerHTML=`<img src="${url}" alt="${fname}" loading="lazy" onclick="openPhotoLb('${url}','${fname}')"><span class="photo-thumb-date">${day}</span><button class="photo-thumb-del" onclick="delPhoto('${clientId}','${fname}',this)">&#215;</button>`;
+        div.innerHTML=`<img src="${url}" alt="${filename}" loading="lazy" onclick="openPhotoLb('${url}','${date}/${filename}')"><span class="photo-thumb-date">${date}</span><button class="photo-thumb-del" onclick="delPhoto('${clientId}','${date}','${filename}',this)">&#215;</button>`;
         grid.appendChild(div);
       }
     }
-    async function delPhoto(clientId,filename,btn) {
+    async function delPhoto(clientId,dateStr,filename,btn) {
       if(!confirm('Eliminare questa foto?')) return;
-      btn.closest('.photo-thumb').remove(); await _deletePhoto(clientId,filename); toast('Foto eliminata');
+      btn.closest('.photo-thumb').remove(); await _deletePhoto(clientId,dateStr,filename); toast('Foto eliminata');
     }
     function openPhotoLb(url,name) {
       document.getElementById('photo-lb-img').src=url;
