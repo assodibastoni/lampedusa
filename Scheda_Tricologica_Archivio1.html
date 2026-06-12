@@ -760,6 +760,7 @@
 
     /* ── PHOTO GALLERY ── */
     .photo-sect { max-width: 210mm; margin: 0 auto 10px; background: var(--charcoal); border: 1px solid rgba(200,169,110,0.1); border-top: 2px solid rgba(200,169,110,0.2); display: none; }
+    .photo-sect.on { display: block; }
     .photo-sect-hdr { display: flex; align-items: center; justify-content: space-between; padding: 9px 18px; border-bottom: 1px solid rgba(200,169,110,0.07); }
     .photo-sect-title { font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; display: flex; align-items: center; gap: 7px; }
     .photo-sect-title svg { width: 12px; height: 12px; }
@@ -1564,7 +1565,7 @@
       if (visits.length > 0) { const last = visits[visits.length - 1]; vid = last.id; clF(); aD(last.data); sRO(false); }
       else { vid = null; clF(); sRO(false); }
       mS(); uTB(client); rVB(client); cSB(); toast('Caricato: ' + cN(client)); window.scrollTo({ top: 0, behavior: 'smooth' });
-      document.getElementById('photo-sect').style.display='';
+      document.getElementById('photo-sect').classList.add('on');
       renderPhotos(id);
       if(_dh) _writeScheda(id);
     }
@@ -1603,7 +1604,9 @@
       if (dirty && !confirm('Modifiche non salvate. Continuare?')) return;
       cid = null; vid = null; clF(); sRO(false); mS();
       document.getElementById('vbar').classList.remove('on');
+      document.getElementById('photo-sect').classList.remove('on');
       const s = document.getElementById('tbst'); s.classList.remove('on'); s.textContent = '';
+      if(_dh) _fsWrite('autosave.json',{cid:null,vid:null,data:{}}); else localStorage.removeItem(AK);
       cSB(); toast('Nuova scheda pronta');
     }
     function saveVisit() {
@@ -1624,7 +1627,7 @@
       const arch = gA(), name = cN(arch[id] || {});
       if (!confirm('Eliminare definitivamente "' + name + '" e tutte le sue visite?')) return;
       delete arch[id]; sA(arch);
-      if (cid === id) { cid = null; vid = null; clF(); sRO(false); mS(); document.getElementById('vbar').classList.remove('on'); }
+      if (cid === id) { cid = null; vid = null; clF(); sRO(false); mS(); document.getElementById('vbar').classList.remove('on'); document.getElementById('photo-sect').classList.remove('on'); if(_dh) _fsWrite('autosave.json',{cid:null,vid:null,data:{}}); else localStorage.removeItem(AK); }
       rCL(); toast('Cliente eliminato');
     }
     function uTB(client) { const s = document.getElementById('tbst'); const n = cN(client); s.textContent = n; s.classList.toggle('on', !!n); }
