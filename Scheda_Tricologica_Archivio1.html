@@ -683,6 +683,51 @@
       color: rgba(200,169,110,0.25); font-family: var(--font-display);
       font-style: italic; font-size: 11px; line-height: 1.8;
     }
+
+    /* ── FILE SYSTEM STATUS ── */
+    .fs-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: var(--font-ui); font-size: 6px; letter-spacing: 2px;
+      text-transform: uppercase; font-weight: 600; padding: 4px 9px;
+      border: 1px solid; cursor: pointer; transition: all .2s;
+      white-space: nowrap; flex-shrink: 0; background: transparent;
+    }
+    .fs-chip svg { width: 8px; height: 8px; flex-shrink: 0 }
+    .fs-chip.connected { border-color: rgba(200,169,110,0.25); color: rgba(200,169,110,0.55) }
+    .fs-chip.connected:hover { border-color: var(--gold); color: var(--gold) }
+    .fs-chip.disconnected { border-color: rgba(224,80,80,0.35); color: rgba(224,80,80,0.7) }
+    .fs-chip.disconnected:hover { background: rgba(224,80,80,0.07) }
+    .fs-chip.unsupported { border-color: rgba(200,169,110,0.12); color: rgba(200,169,110,0.28); cursor: default }
+
+    /* ── FILE SYSTEM MODAL ── */
+    .fs-modal-ov {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.92);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .3s ease;
+    }
+    .fs-modal-ov.open { opacity: 1; pointer-events: all }
+    .fs-modal-box {
+      background: var(--charcoal);
+      border: 1px solid rgba(200,169,110,0.2); border-top: 3px solid var(--gold);
+      width: min(460px, 96vw); box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    }
+    .fs-modal-hdr { padding: 18px 22px 14px; border-bottom: 1px solid rgba(200,169,110,0.1) }
+    .fs-modal-title { font-family: var(--font-display); font-size: 18px; font-weight: 300; color: var(--cream); letter-spacing: 1px }
+    .fs-modal-title em { color: var(--gold); font-style: italic }
+    .fs-modal-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 14px }
+    .fs-modal-desc { font-family: var(--font-display); font-size: 12px; font-weight: 300; color: rgba(200,169,110,0.6); line-height: 1.8; font-style: italic }
+    .fs-modal-note { font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 1.8px; text-transform: uppercase; color: rgba(200,169,110,0.35); line-height: 1.7; padding: 10px 12px; border: 1px solid rgba(200,169,110,0.1); background: rgba(200,169,110,0.03) }
+    .fs-modal-note b { color: rgba(200,169,110,0.55); font-weight: 600 }
+    .fs-modal-cur { padding: 10px 13px; border: 1px solid rgba(200,169,110,0.2); background: rgba(200,169,110,0.05); display: none }
+    .fs-modal-cur-lbl { font-family: var(--font-ui); font-size: 6px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px }
+    .fs-modal-cur-val { font-family: var(--font-display); font-size: 13px; color: var(--cream) }
+    .fs-modal-ftr { display: flex; gap: 8px; justify-content: flex-end; padding: 14px 22px; border-top: 1px solid rgba(200,169,110,0.1) }
+    .fs-connect-btn { font-family: var(--font-ui); font-size: 7px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 600; padding: 9px 18px; border: 1px solid rgba(200,169,110,0.4); color: var(--gold-light); background: transparent; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 7px }
+    .fs-connect-btn:hover { background: var(--gold-dark); color: var(--white); border-color: var(--gold-dark) }
+    .fs-connect-btn svg { width: 10px; height: 10px }
+    .fs-skip-btn { font-family: var(--font-ui); font-size: 7px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; padding: 9px 14px; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.25); background: transparent; cursor: pointer; transition: all .2s }
+    .fs-skip-btn:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.4) }
   </style>
 </head>
 
@@ -802,6 +847,7 @@
           <div class="tbst" id="tbst"></div>
         </div>
         <span class="udot" id="udot"></span>
+        <div id="fs-status" style="margin-left:auto"></div>
       </div>
       <div class="tb-actions">
         <button class="tbb sa" id="bsv" onclick="saveVisit()">
@@ -1289,14 +1335,39 @@
     </div>
   </div>
 
+  <!-- FILE SYSTEM MODAL -->
+  <div class="fs-modal-ov" id="fs-modal-ov">
+    <div class="fs-modal-box">
+      <div class="fs-modal-hdr">
+        <div class="fs-modal-title">Cartella Dati <em>&#8212; archiviazione su file</em></div>
+      </div>
+      <div class="fs-modal-body">
+        <div class="fs-modal-desc">Seleziona una cartella sul tuo dispositivo dove salvare archivio, prenotazioni e lavoro in corso. I file vengono scritti direttamente sul disco — nessun dato nel browser.</div>
+        <div class="fs-modal-note"><b>Sincronizzazione tra dispositivi:</b> per usare i dati su pi&ugrave; dispositivi, scegli una cartella gi&agrave; sincronizzata con <b>Google Drive</b>, <b>Dropbox</b>, <b>OneDrive</b> o <b>iCloud Drive</b>.</div>
+        <div class="fs-modal-cur" id="fs-modal-cur">
+          <div class="fs-modal-cur-lbl">Cartella connessa</div>
+          <div class="fs-modal-cur-val" id="fs-modal-cur-val"></div>
+        </div>
+      </div>
+      <div class="fs-modal-ftr">
+        <button class="fs-skip-btn" onclick="closeFSModal()">Annulla</button>
+        <button class="fs-connect-btn" onclick="connectFolder()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
+          Seleziona cartella
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SK = 'trico_v3', AK = 'trico_as_v3';
     const A1 = ['Caduta capelli', 'Diradamento diffuso', 'Cute grassa (seborrea)', 'Cute secca', 'Forfora (pitiriasi)', 'Sensibilit\u00e0 / Prurito', 'Dermatite seborroica', 'Psoriasi cuoio capelluto', 'Fragilit\u00e0 capello', 'Doppie punte / rottura', 'Capelli senza volume', 'Alopecia areata'];
     const A2 = ['Patologia tiroidea', 'Anemia / carenza ferro', 'Diabete', 'Terapia ormonale', 'Gravidanza / allattamento', 'Post-partum', 'Menopausa / andropausa', 'Stress cronico / burnout', 'Intervento chirurgico recente', 'Perdita di peso rapida', 'Alimentazione carente'];
     const AP = [{ n: 'stato_cute', l: 'Stato cute', a: 'Ottimo', b: 'Critico' }, { n: 'densita', l: 'Densit\u00e0', a: 'Alta', b: 'Bassa' }, { n: 'spessore', l: 'Spessore fusto', a: 'Spesso', b: 'Sottile' }, { n: 'sebo', l: 'Sebo', a: 'Scarso', b: 'Eccessivo' }, { n: 'desquamazione', l: 'Desquamazione', a: 'Assente', b: 'Severa' }, { n: 'miniaturizzazione', l: 'Miniaturizzazione', a: 'Assente', b: 'Marcata' }, { n: 'infiammazione', l: 'Infiammazione cute', a: 'Assente', b: 'Severa' }, { n: 'idratazione', l: 'Idratazione', a: 'Ottima', b: 'Scarsa' }, { n: 'ph_cute', l: 'pH cute', a: 'Acido', b: 'Alcalino' }];
     let cid = null, vid = null, ro = false, dirty = false;
-    function gA() { try { return JSON.parse(localStorage.getItem(SK)) || {}; } catch { return {}; } }
-    function sA(a) { localStorage.setItem(SK, JSON.stringify(a)); }
+    let _arch = {}, _ag = {}, _dh = null, _fsOk = false;
+    function gA() { return _arch; }
+    function sA(a) { _arch = a; if (_dh) _fsWrite('archivio.json', a); else localStorage.setItem(SK, JSON.stringify(a)); }
     function gid() { return '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6); }
     function bG(items, id, pfx) {
       const g = document.getElementById(id);
@@ -1323,7 +1394,7 @@
     function clF() { document.querySelectorAll('#sf input[type="text"],#sf input[type="email"],#sf input[type="tel"],#sf input[type="date"],#sf textarea').forEach(el => { if (el.name !== 'firma_tecnico') el.value = ''; }); document.querySelectorAll('#sf input[type="radio"],#sf input[type="checkbox"]').forEach(el => el.checked = false); document.querySelectorAll('.dot-i.active,.scale-cell.active').forEach(el => el.classList.remove('active')); document.getElementById('footer-ref').textContent = '\u2014'; }
     function mU() { if (ro) return; dirty = true; document.getElementById('udot').classList.add('on'); sAs(); }
     function mS() { dirty = false; document.getElementById('udot').classList.remove('on'); }
-    let _t; function sAs() { clearTimeout(_t); _t = setTimeout(() => localStorage.setItem(AK, JSON.stringify({ cid, vid, data: cD() })), 900); }
+    let _t; function sAs() { clearTimeout(_t); _t = setTimeout(() => { const s={cid,vid,data:cD()}; if(_dh) _fsWrite('autosave.json',s); else localStorage.setItem(AK,JSON.stringify(s)); }, 900); }
     document.getElementById('sf').addEventListener('input', () => { if (!ro) mU(); });
     document.getElementById('sf').addEventListener('change', () => { if (!ro) mU(); });
     function sRO(v) { ro = v; document.getElementById('pg').classList.toggle('rom', v); document.getElementById('rban').classList.toggle('on', v); document.getElementById('vbrob').classList.toggle('on', v); document.getElementById('bsv').style.display = v ? 'none' : ''; }
@@ -1491,8 +1562,8 @@
     let agendaSelDate = null;
     let editingApptId = null;
 
-    function gAg() { try { return JSON.parse(localStorage.getItem(AGK)) || {}; } catch { return {}; } }
-    function sAg(a) { localStorage.setItem(AGK, JSON.stringify(a)); }
+    function gAg() { return _ag; }
+    function sAg(a) { _ag = a; if (_dh) _fsWrite('agenda.json', a); else localStorage.setItem(AGK, JSON.stringify(a)); }
 
     function openAgenda() {
       const now = new Date();
@@ -1664,9 +1735,78 @@
         '</div></div>'
       ).join('');
     }
-    bG(A1, 'ag', 'an1'); bG(A2, 'ag2', 'an2'); bA();
-    try { const as = JSON.parse(localStorage.getItem(AK) || 'null'); if (as && as.data) { aD(as.data); if (as.cid) { const arch = gA(); if (arch[as.cid]) { cid = as.cid; vid = as.vid || null; uTB(arch[as.cid]); rVB(arch[as.cid]); sRO(false); dirty = true; document.getElementById('udot').classList.add('on'); } } } } catch (e) { console.warn(e); }
-    window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+    /* ═══ FILE SYSTEM STORAGE MODULE ═══ */
+    function _idbOpen() {
+      return new Promise((res,rej)=>{ const r=indexedDB.open('trico_fs1',1); r.onupgradeneeded=e=>e.target.result.createObjectStore('kv'); r.onsuccess=e=>res(e.target.result); r.onerror=rej; });
+    }
+    async function _idbGet(k) { try { const db=await _idbOpen(); return new Promise((res,rej)=>{ const t=db.transaction('kv','readonly'),r=t.objectStore('kv').get(k); r.onsuccess=()=>res(r.result); r.onerror=rej; }); } catch { return null; } }
+    async function _idbSet(k,v) { try { const db=await _idbOpen(); return new Promise((res,rej)=>{ const t=db.transaction('kv','readwrite'); t.objectStore('kv').put(v,k); t.oncomplete=res; t.onerror=rej; }); } catch {} }
+
+    async function _fsRead(name, fallback) { try { const fh=await _dh.getFileHandle(name); return JSON.parse(await(await fh.getFile()).text()); } catch { return fallback; } }
+    async function _fsWrite(name, data) { if(!_dh) return; try { const fh=await _dh.getFileHandle(name,{create:true}),w=await fh.createWritable(); await w.write(JSON.stringify(data,null,2)); await w.close(); } catch(e){console.warn('fsWrite',name,e);} }
+
+    function _upFSStatus() {
+      const el=document.getElementById('fs-status'); if(!el) return;
+      if(_fsOk && _dh) {
+        el.innerHTML='<button class="fs-chip connected" onclick="openFSModal()" title="Cartella connessa — clicca per cambiare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>'+(_dh.name||'Cartella')+'</button>';
+      } else if(!window.showDirectoryPicker) {
+        el.innerHTML='<button class="fs-chip unsupported" title="Usa Chrome o Edge per il salvataggio su file. Su questo browser i dati sono nel browser.">Solo browser</button>';
+      } else {
+        el.innerHTML='<button class="fs-chip disconnected" onclick="openFSModal()">&#9888; Nessuna cartella</button>';
+      }
+    }
+
+    function openFSModal() {
+      const cur=document.getElementById('fs-modal-cur'), val=document.getElementById('fs-modal-cur-val');
+      if(_dh && cur && val) { cur.style.display='block'; val.textContent=_dh.name||'Cartella'; }
+      else if(cur) { cur.style.display='none'; }
+      document.getElementById('fs-modal-ov').classList.add('open');
+    }
+    function closeFSModal() { document.getElementById('fs-modal-ov').classList.remove('open'); }
+
+    async function _loadFolder() {
+      const archFile=await _fsRead('archivio.json',null);
+      const agFile=await _fsRead('agenda.json',null);
+      if(archFile!==null) { _arch=archFile; } else { await _fsWrite('archivio.json',_arch); }
+      if(agFile!==null) { _ag=agFile; } else { await _fsWrite('agenda.json',_ag); }
+      localStorage.removeItem(SK); localStorage.removeItem(AGK); localStorage.removeItem(AK);
+      _fsOk=true; _upFSStatus(); rCL(); rFU();
+      const as=await _fsRead('autosave.json',null);
+      if(as && as.data) { aD(as.data); if(as.cid && _arch[as.cid]) { cid=as.cid; vid=as.vid||null; uTB(_arch[as.cid]); rVB(_arch[as.cid]); sRO(false); dirty=true; document.getElementById('udot').classList.add('on'); } }
+    }
+
+    async function connectFolder() {
+      try {
+        const h=await window.showDirectoryPicker({mode:'readwrite'});
+        _dh=h; await _idbSet('dh',h);
+        await _loadFolder();
+        closeFSModal(); toast('Cartella connessa');
+      } catch(e) { if(e.name!=='AbortError') toast('Errore accesso cartella'); }
+    }
+
+    function _loadFromLS() {
+      try { _arch=JSON.parse(localStorage.getItem(SK)||'null')||{}; } catch { _arch={}; }
+      try { _ag=JSON.parse(localStorage.getItem(AGK)||'null')||{}; } catch { _ag={}; }
+      _fsOk=true; rCL(); rFU();
+      try { const as=JSON.parse(localStorage.getItem(AK)||'null'); if(as&&as.data){ aD(as.data); if(as.cid&&_arch[as.cid]){ cid=as.cid; vid=as.vid||null; uTB(_arch[as.cid]); rVB(_arch[as.cid]); sRO(false); dirty=true; document.getElementById('udot').classList.add('on'); } } } catch(e){ console.warn(e); }
+    }
+
+    async function initApp() {
+      bG(A1,'ag','an1'); bG(A2,'ag2','an2'); bA();
+      window.addEventListener('beforeunload',e=>{ if(dirty){ e.preventDefault(); e.returnValue=''; } });
+      if(!window.showDirectoryPicker) { _loadFromLS(); _upFSStatus(); return; }
+      _upFSStatus();
+      try {
+        const h=await _idbGet('dh');
+        if(h) {
+          let p=await h.queryPermission({mode:'readwrite'});
+          if(p==='prompt') p=await h.requestPermission({mode:'readwrite'});
+          if(p==='granted') { _dh=h; await _loadFolder(); return; }
+        }
+      } catch {}
+      _loadFromLS(); _upFSStatus(); openFSModal();
+    }
+    initApp();
   </script>
 </body>
 
