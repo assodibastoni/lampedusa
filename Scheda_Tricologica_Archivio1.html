@@ -1462,7 +1462,7 @@
         list.appendChild(item);
       });
     }
-    function rFU(arch) {
+    function rFU(arch) { if(arch===undefined) arch=gA();
       const flist = document.getElementById('sbful');
       const empty = document.getElementById('sbfu-empty');
       const badge = document.getElementById('sbtab-badge');
