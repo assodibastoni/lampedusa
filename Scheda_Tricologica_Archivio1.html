@@ -1845,7 +1845,7 @@
         if(el) el.innerHTML='<button class="fs-chip unsupported" onclick="openFSModal()" style="cursor:pointer">Solo browser</button>';
         if(banner) { banner.style.display='';
           if(bTitle) bTitle.textContent='Salvataggio su file non disponibile';
-          if(bSub) bSub.textContent='Questo browser non supporta l\'API. Apri il file con Chrome o Edge. Su Brave: disabilita Shields (icona del leone) per questa pagina e ricarica.';
+          if(bSub) bSub.textContent='Su Brave: clicca il leone \u{1F9F7} → disattiva Shields per questa pagina → ricarica. Oppure apri il file con Chrome o Edge.';
           if(bBtn) { bBtn.textContent='Come fare'; bBtn.onclick=openFSModal; }
         }
       } else {
@@ -1858,14 +1858,26 @@
       }
     }
 
-    function openFSModal() {
+    let _isBraveCache=null;
+    async function _isBrave(){if(_isBraveCache!==null)return _isBraveCache;try{_isBraveCache=!!(await navigator.brave?.isBrave());}catch{_isBraveCache=false;}return _isBraveCache;}
+    function _applyBraveNote(){
+      const note=document.querySelector('.fs-modal-note'),btn=document.querySelector('.fs-connect-btn');
+      if(note) note.innerHTML='<b style="color:rgba(200,169,110,0.85);font-size:7.5px;letter-spacing:1.5px">&#9888;&nbsp;BRAVE SHIELDS BLOCCA L\'ACCESSO AI FILE</b><br><br><b>Per abilitare:</b><br>1. Clicca l\'icona del <b>leone &#129466;</b> in alto a destra nel browser<br>2. Disattiva <b>Shields</b> per questa pagina (toggle su OFF)<br>3. La pagina si ricarica — poi clicca di nuovo <b>Seleziona cartella</b><br><br><b>In alternativa:</b> apri il file con <b>Chrome</b> o <b>Edge</b>.';
+      if(btn) btn.style.display='';
+    }
+    async function openFSModal() {
       const cur=document.getElementById('fs-modal-cur'), val=document.getElementById('fs-modal-cur-val');
       if(_dh && cur && val) { cur.style.display='block'; val.textContent=_dh.name||'Cartella'; }
       else if(cur) { cur.style.display='none'; }
-      const note=document.querySelector('.fs-modal-note');
-      const btn=document.querySelector('.fs-connect-btn');
-      if(note) note.innerHTML='<b>Google Drive / Dropbox:</b> clicca &ldquo;Seleziona cartella&rdquo; &rarr; naviga nella cartella sincronizzata di Google Drive o Dropbox sul tuo computer &rarr; conferma.<br><br>Se il pulsante non risponde, apri il file con <b>Chrome</b> o <b>Edge</b> (Brave: disabilita Shields per questa pagina).';
-      if(btn) btn.style.display='';
+      const brave=await _isBrave();
+      if(brave && !window.showDirectoryPicker) {
+        _applyBraveNote();
+      } else {
+        const note=document.querySelector('.fs-modal-note');
+        const btn=document.querySelector('.fs-connect-btn');
+        if(note) note.innerHTML='<b>Google Drive / Dropbox:</b> clicca &ldquo;Seleziona cartella&rdquo; &rarr; naviga nella cartella sincronizzata di Google Drive o Dropbox sul tuo computer &rarr; conferma.<br><br>Su Brave: disabilita Shields (leone &#129466; in alto a destra) per questa pagina e ricarica.';
+        if(btn) btn.style.display='';
+      }
       document.getElementById('fs-modal-ov').classList.add('open');
     }
     function closeFSModal() { document.getElementById('fs-modal-ov').classList.remove('open'); }
@@ -1883,13 +1895,23 @@
     }
 
     async function connectFolder() {
-      if(!window.showDirectoryPicker) { toast('Usa Chrome o Edge per selezionare una cartella'); return; }
+      if(!window.showDirectoryPicker) {
+        const brave=await _isBrave();
+        if(brave) { _applyBraveNote(); document.getElementById('fs-modal-ov').classList.add('open'); }
+        else { toast('Usa Chrome o Edge per selezionare una cartella'); }
+        return;
+      }
       try {
         const h=await window.showDirectoryPicker({mode:'readwrite'});
         _dh=h; await _idbSet('dh',h);
         await _loadFolder(); _upFSStatus();
         closeFSModal(); toast('Cartella connessa');
-      } catch(e) { if(e.name!=='AbortError') toast('Errore accesso cartella'); }
+      } catch(e) {
+        if(e.name==='AbortError') return;
+        if(e.name==='SecurityError'||e.name==='NotAllowedError') {
+          _applyBraveNote(); document.getElementById('fs-modal-ov').classList.add('open');
+        } else { toast('Errore accesso cartella'); }
+      }
     }
 
     function _loadFromLS() {
