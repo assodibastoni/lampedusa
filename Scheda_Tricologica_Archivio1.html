@@ -1598,7 +1598,7 @@
       pf.fields.data_consulenza = new Date().toISOString().split('T')[0];
       const nv = { id: gid(), date: pf.fields.data_consulenza, savedAt: new Date().toISOString(), data: pf };
       if (!client.visits) client.visits = [];
-      client.visits.push(nv); sA(arch); vid = nv.id; clF(); aD(pf); sRO(false); mU(); rVB(client); toast('Nuova visita aggiunta');
+      client.visits.push(nv); sA(arch); vid = nv.id; clF(); aD(pf); sRO(false); mU(); rVB(client); rCL(); toast('Nuova visita aggiunta');
     }
     function newClient() {
       if (dirty && !confirm('Modifiche non salvate. Continuare?')) return;
@@ -1619,7 +1619,7 @@
       const vd = data.fields && data.fields.data_consulenza || new Date().toISOString().split('T')[0];
       if (!vid) { vid = gid(); client.visits.push({ id: vid, date: vd, savedAt: new Date().toISOString(), data }); }
       else { const idx = client.visits.findIndex(v => v.id === vid); if (idx > -1) client.visits[idx] = { id: vid, date: vd, savedAt: new Date().toISOString(), data }; else client.visits.push({ id: vid, date: vd, savedAt: new Date().toISOString(), data }); }
-      sA(arch); mS(); uTB(client); rVB(client); toast(nome ? 'Salvato: ' + nome : 'Visita salvata');
+      sA(arch); mS(); uTB(client); rVB(client); rCL(); toast(nome ? 'Salvato: ' + nome : 'Visita salvata');
       if(_dh) { _writeScheda(cid); _fsWrite('autosave.json',{cid:null,vid:null,data:{}}); }
       else localStorage.removeItem(AK);
     }
@@ -1652,7 +1652,7 @@
     function expJSON() { const data = cD(), nome = (data.fields && data.fields.nome_cognome || 'cliente').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_'), date = data.fields && data.fields.data_consulenza || new Date().toISOString().split('T')[0]; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'Scheda_' + nome + '_' + date + '.json' }); a.click(); URL.revokeObjectURL(a.href); toast('Esportato'); }
     function impJSON(e) { const file = e.target.files[0]; if (!file) return; const r = new FileReader(); r.onload = ev => { try { const p = JSON.parse(ev.target.result); if (!p.fields) { toast('Usa Ripristina per i backup archivio'); return; } if (dirty && !confirm('Sovrascrivere?')) return; clF(); aD(p); vid = null; mU(); toast('Scheda importata'); } catch { alert('Errore nel file JSON.'); } }; r.readAsText(file); e.target.value = ''; }
     function bkpAll() { const arch = gA(), count = Object.keys(arch).length; if (!count) { toast('Nessun cliente'); return; } const date = new Date().toISOString().split('T')[0]; const blob = new Blob([JSON.stringify(arch, null, 2)], { type: 'application/json' }); const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'Archivio_Tricologico_' + date + '.json' }); a.click(); URL.revokeObjectURL(a.href); toast('Backup: ' + count + ' clienti'); }
-    function restBkp(e) { const file = e.target.files[0]; if (!file) return; const r = new FileReader(); r.onload = ev => { try { const p = JSON.parse(ev.target.result); const keys = Object.keys(p); if (!keys.length) { alert('File vuoto.'); return; } if (!confirm('Ripristinare ' + keys.length + ' clienti? L\'archivio attuale sar\u00e0 sovrascritto.')) return; sA(p); cid = null; vid = null; clF(); sRO(false); mS(); document.getElementById('vbar').classList.remove('on'); rCL(); toast('Ripristino: ' + keys.length + ' clienti'); } catch { alert('Errore nel file JSON.'); } }; r.readAsText(file); e.target.value = ''; }
+    function restBkp(e) { const file = e.target.files[0]; if (!file) return; const r = new FileReader(); r.onload = ev => { try { const p = JSON.parse(ev.target.result); const keys = Object.keys(p); if (!keys.length) { alert('File vuoto.'); return; } if (!confirm('Ripristinare ' + keys.length + ' clienti? L\'archivio attuale sar\u00e0 sovrascritto.')) return; sA(p); cid = null; vid = null; clF(); sRO(false); mS(); document.getElementById('vbar').classList.remove('on'); document.getElementById('photo-sect').classList.remove('on'); const si=document.getElementById('sbsi'); if(si) si.value=''; rCL(); toast('Ripristino: ' + keys.length + ' clienti'); } catch { alert('Errore nel file JSON.'); } }; r.readAsText(file); e.target.value = ''; }
     function switchTab(tab) {
       document.getElementById('panel-clienti').style.display = tab === 'clienti' ? 'flex' : 'none';
       document.getElementById('panel-scadenze').style.display = tab === 'scadenze' ? 'flex' : 'none';
@@ -2035,6 +2035,7 @@
     }
     async function renderPhotos(clientId) {
       const grid=document.getElementById('photo-grid'); if(!grid) return;
+      grid.querySelectorAll('img[src^="blob:"]').forEach(img=>URL.revokeObjectURL(img.src));
       grid.innerHTML='';
       if(!_dh) { grid.innerHTML='<div class="photo-msg">Connetti una cartella per salvare e visualizzare le foto.</div>'; return; }
       const photos=await _listPhotos(clientId);
