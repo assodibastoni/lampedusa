@@ -1620,7 +1620,8 @@
       if (!vid) { vid = gid(); client.visits.push({ id: vid, date: vd, savedAt: new Date().toISOString(), data }); }
       else { const idx = client.visits.findIndex(v => v.id === vid); if (idx > -1) client.visits[idx] = { id: vid, date: vd, savedAt: new Date().toISOString(), data }; else client.visits.push({ id: vid, date: vd, savedAt: new Date().toISOString(), data }); }
       sA(arch); mS(); uTB(client); rVB(client); toast(nome ? 'Salvato: ' + nome : 'Visita salvata');
-      if(_dh) _writeScheda(cid);
+      if(_dh) { _writeScheda(cid); _fsWrite('autosave.json',{cid:null,vid:null,data:{}}); }
+      else localStorage.removeItem(AK);
     }
     function delC(id, event) {
       event.stopPropagation();
@@ -1928,7 +1929,7 @@
       localStorage.removeItem(SK); localStorage.removeItem(AGK); localStorage.removeItem(AK);
       _fsOk=true; _upFSStatus(); rCL(); rFU();
       const as=await _fsRead('autosave.json',null);
-      if(as && as.data) { aD(as.data); if(as.cid && _arch[as.cid]) { cid=as.cid; vid=as.vid||null; uTB(_arch[as.cid]); rVB(_arch[as.cid]); sRO(false); dirty=true; document.getElementById('udot').classList.add('on'); } }
+      if(as && as.data && as.cid && _arch[as.cid]) { aD(as.data); cid=as.cid; vid=as.vid||null; uTB(_arch[as.cid]); rVB(_arch[as.cid]); sRO(false); dirty=true; document.getElementById('udot').classList.add('on'); document.getElementById('photo-sect').classList.add('on'); renderPhotos(as.cid); }
     }
 
     async function connectFolder() {
@@ -1955,7 +1956,7 @@
       try { _arch=JSON.parse(localStorage.getItem(SK)||'null')||{}; } catch { _arch={}; }
       try { _ag=JSON.parse(localStorage.getItem(AGK)||'null')||{}; } catch { _ag={}; }
       _fsOk=true; rCL(); rFU();
-      try { const as=JSON.parse(localStorage.getItem(AK)||'null'); if(as&&as.data){ aD(as.data); if(as.cid&&_arch[as.cid]){ cid=as.cid; vid=as.vid||null; uTB(_arch[as.cid]); rVB(_arch[as.cid]); sRO(false); dirty=true; document.getElementById('udot').classList.add('on'); } } } catch(e){ console.warn(e); }
+      try { const as=JSON.parse(localStorage.getItem(AK)||'null'); if(as&&as.data&&as.cid&&_arch[as.cid]){ aD(as.data); cid=as.cid; vid=as.vid||null; uTB(_arch[as.cid]); rVB(_arch[as.cid]); sRO(false); dirty=true; document.getElementById('udot').classList.add('on'); document.getElementById('photo-sect').classList.add('on'); } } catch(e){ console.warn(e); }
     }
 
     // ── PHOTO FUNCTIONS ──
