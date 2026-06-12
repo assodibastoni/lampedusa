@@ -190,11 +190,11 @@
       background: var(--charcoal);
       border: 1px solid rgba(200,169,110,0.12);
       border-top: 2px solid var(--gold);
-      padding: 10px 18px;
-      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      padding: 10px 18px 8px;
+      display: flex; flex-direction: column; gap: 0;
       box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     }
-    .tbl { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0 }
+    .tbl { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; }
     .tbab {
       font-family: var(--font-ui); font-size: 7px; letter-spacing: 3px;
       text-transform: uppercase; font-weight: 600; padding: 8px 14px;
@@ -226,7 +226,7 @@
     .tbb svg { width: 10px; height: 10px; flex-shrink: 0 }
     .udot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); display: none; flex-shrink: 0 }
     .udot.on { display: inline-block }
-    .tb-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap }
+    .tb-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; border-top: 1px solid rgba(200,169,110,0.08); padding-top: 8px; }
 
     /* ── VISIT BAR ── */
     .vbar {
@@ -375,8 +375,8 @@
 
     @media (max-width: 700px) {
       #app { padding: 12px 8px 48px }
-      .tb { padding: 8px 10px; gap: 5px }
-      .tbl { flex: 1; min-width: 0; overflow: hidden }
+      .tb { padding: 8px 10px; }
+      .tbl { padding-bottom: 6px; }
       .tbab { padding: 7px 10px; font-size: 6.5px; letter-spacing: 2px }
       .tbab svg { width: 10px; height: 10px }
       .tbt { font-size: 12px }
