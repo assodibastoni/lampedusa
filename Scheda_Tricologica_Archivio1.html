@@ -1872,6 +1872,44 @@
     async function _fsRead(name, fallback) { try { const fh=await _dh.getFileHandle(name); return JSON.parse(await(await fh.getFile()).text()); } catch { return fallback; } }
     async function _fsWrite(name, data) { if(!_dh) return; try { const fh=await _dh.getFileHandle(name,{create:true}),w=await fh.createWritable(); await w.write(JSON.stringify(data,null,2)); await w.close(); } catch(e){console.warn('fsWrite',name,e);} }
 
+    /* ── SYNC ENGINE ── */
+    let _syncTimer=null, _syncing=false;
+    async function _doSync(manual=false) {
+      if(!_dh||!_fsOk||_syncing) return;
+      _syncing=true;
+      try {
+        const [diskArch,diskAg]=await Promise.all([_fsRead('archivio.json',null),_fsRead('agenda.json',null)]);
+        let changed=false;
+        if(diskArch&&typeof diskArch==='object') {
+          const merged={...diskArch};
+          for(const id of _deletedClients) delete merged[id];
+          if(JSON.stringify(merged)!==JSON.stringify(_arch)) {
+            if(cid&&!merged[cid]) {
+              cid=null;vid=null;clF();sRO(false);mS();
+              document.getElementById('vbar').classList.remove('on');
+              document.getElementById('photo-sect').classList.remove('on');
+              toast('Cliente rimosso su un altro dispositivo');
+            }
+            _arch=merged; rCL(); rFU(); changed=true;
+          }
+        }
+        if(diskAg&&typeof diskAg==='object'&&JSON.stringify(diskAg)!==JSON.stringify(_ag)) {
+          _ag=diskAg; renderSidebarAgenda(); changed=true;
+        }
+        if(changed) _flashChip();
+        else if(manual) toast('Già sincronizzato');
+      } catch{}
+      _syncing=false;
+    }
+    function _flashChip() {
+      const el=document.getElementById('fs-status');
+      if(!el) return;
+      el.style.opacity='0.4';
+      setTimeout(()=>el.style.opacity='',400);
+    }
+    function _startSync() { _stopSync(); _syncTimer=setInterval(()=>_doSync(),15000); }
+    function _stopSync() { if(_syncTimer){clearInterval(_syncTimer);_syncTimer=null;} }
+
     function _upFSStatus() {
       const el=document.getElementById('fs-status');
       const banner=document.getElementById('fs-banner');
@@ -1879,7 +1917,7 @@
       const bSub=document.getElementById('fsb-sub');
       const bBtn=document.getElementById('fsb-btn');
       if(_fsOk && _dh) {
-        if(el) el.innerHTML='<button class="fs-chip connected" onclick="openFSModal()" title="Cartella connessa — clicca per cambiare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>'+(_dh.name||'Cartella')+'</button>';
+        if(el) el.innerHTML='<button class="fs-chip connected" onclick="_doSync(true)" title="Clicca per sincronizzare ora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>'+(_dh.name||'Cartella')+'</button>';
         if(banner) banner.style.display='none';
       } else if(!window.showDirectoryPicker) {
         if(el) el.innerHTML='<button class="fs-chip unsupported" onclick="openFSModal()" style="cursor:pointer">Solo browser</button>';
@@ -1948,7 +1986,7 @@
       if(agFile!==null) { _ag=agFile; } else { await _fsWrite('agenda.json',_ag); }
       try { _cDirMap=await _fsRead('_clienti_dirs.json',{}); } catch { _cDirMap={}; }
       localStorage.removeItem(SK); localStorage.removeItem(AGK); localStorage.removeItem(AK);
-      _fsOk=true; _upFSStatus(); rCL(); rFU();
+      _fsOk=true; _upFSStatus(); rCL(); rFU(); _startSync();
       const as=await _fsRead('autosave.json',null);
       if(as && as.data && as.cid && _arch[as.cid]) { aD(as.data); cid=as.cid; vid=as.vid||null; uTB(_arch[as.cid]); rVB(_arch[as.cid]); sRO(false); dirty=true; document.getElementById('udot').classList.add('on'); document.getElementById('photo-sect').classList.add('on'); renderPhotos(as.cid); }
     }
