@@ -763,9 +763,9 @@
     .photo-sect-hdr { display: flex; align-items: center; justify-content: space-between; padding: 9px 18px; border-bottom: 1px solid rgba(200,169,110,0.07); }
     .photo-sect-title { font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; display: flex; align-items: center; gap: 7px; }
     .photo-sect-title svg { width: 12px; height: 12px; }
-    .photo-add-btn { font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; padding: 5px 12px; border: 1px solid rgba(200,169,110,0.3); color: var(--gold-light); background: transparent; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 5px; }
-    .photo-add-btn:hover { background: var(--gold-dark); color: var(--white); border-color: var(--gold-dark) }
-    .photo-add-btn svg { width: 10px; height: 10px }
+    .photo-add-btn { font-family: var(--font-ui); font-size: 7px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; padding: 7px 14px; border: none; color: #1a1400; background: var(--gold); cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; }
+    .photo-add-btn:hover { background: var(--gold-light) }
+    .photo-add-btn svg { width: 11px; height: 11px }
     .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 4px; padding: 10px 18px 12px; min-height: 44px; }
     .photo-thumb { aspect-ratio: 1; overflow: hidden; border: 1px solid rgba(200,169,110,0.12); cursor: pointer; position: relative; background: rgba(0,0,0,0.35); }
     .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .2s; }
@@ -774,6 +774,12 @@
     .photo-thumb:hover .photo-thumb-del { display: flex; }
     .photo-thumb-date { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.65)); padding: 12px 5px 4px; font-family: var(--font-ui); font-size: 5.5px; letter-spacing: 1px; color: rgba(200,169,110,0.75); pointer-events: none; }
     .photo-msg { padding: 12px 18px; font-family: var(--font-display); font-size: 12px; color: rgba(200,169,110,0.3); font-style: italic; }
+    .photo-drop-zone { margin: 10px 18px 14px; border: 1px dashed rgba(200,169,110,0.25); padding: 22px 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background .2s; }
+    .photo-drop-zone:hover, .photo-drop-zone.drag-over { background: rgba(200,169,110,0.07); border-color: rgba(200,169,110,0.5); }
+    .photo-drop-zone-icon { color: rgba(200,169,110,0.3); }
+    .photo-drop-zone-icon svg { width: 28px; height: 28px; }
+    .photo-drop-zone-lbl { font-family: var(--font-ui); font-size: 7px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(200,169,110,0.4); }
+    .photo-drop-zone-sub { font-family: var(--font-display); font-size: 11px; color: rgba(200,169,110,0.25); font-style: italic; }
     .photo-lb { position: fixed; inset: 0; z-index: 600; background: rgba(0,0,0,0.96); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; }
     .photo-lb.open { opacity: 1; pointer-events: all }
     .photo-lb-img { max-width: 90vw; max-height: 90vh; object-fit: contain; }
@@ -2017,7 +2023,10 @@
       grid.innerHTML='';
       if(!_dh) { grid.innerHTML='<div class="photo-msg">Connetti una cartella per salvare e visualizzare le foto.</div>'; return; }
       const photos=await _listPhotos(clientId);
-      if(!photos.length) { grid.innerHTML='<div class="photo-msg">Nessuna foto — clicca "Aggiungi foto" per iniziare.</div>'; return; }
+      if(!photos.length) {
+        grid.innerHTML=`<div class="photo-drop-zone" onclick="triggerPhotoUpload()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="this.classList.remove('drag-over');handlePhotoDrop(event)"><div class="photo-drop-zone-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/><line x1="12" y1="2" x2="12" y2="8"/><polyline points="9 5 12 2 15 5"/></svg></div><div class="photo-drop-zone-lbl">Carica foto</div><div class="photo-drop-zone-sub">Clicca oppure trascina le immagini qui</div></div>`;
+        return;
+      }
       for(const {date,filename} of photos) {
         const blob=await _readPhoto(clientId,date,filename); if(!blob) continue;
         const url=URL.createObjectURL(blob);
@@ -2025,6 +2034,22 @@
         div.innerHTML=`<img src="${url}" alt="${filename}" loading="lazy" onclick="openPhotoLb('${url}','${date}/${filename}')"><span class="photo-thumb-date">${date}</span><button class="photo-thumb-del" onclick="delPhoto('${clientId}','${date}','${filename}',this)">&#215;</button>`;
         grid.appendChild(div);
       }
+    }
+    async function handlePhotoDrop(ev) {
+      ev.preventDefault();
+      if(!_dh||!cid) return;
+      const files=[...ev.dataTransfer.files].filter(f=>f.type.startsWith('image/'));
+      if(!files.length) return;
+      const today=new Date().toISOString().split('T')[0];
+      const existing=(await _listPhotos(cid)).filter(p=>p.date===today);
+      let count=existing.length, saved=0;
+      for(const file of files) {
+        const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+        count++;
+        if(await _writePhoto(cid,today,`${String(count).padStart(3,'0')}.${ext}`,file)) saved++;
+      }
+      if(saved) { toast(`${saved} foto salvata${saved>1?'e':''}`); renderPhotos(cid); }
+      else toast('Errore salvataggio foto');
     }
     async function delPhoto(clientId,dateStr,filename,btn) {
       if(!confirm('Eliminare questa foto?')) return;
