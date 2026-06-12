@@ -1864,13 +1864,8 @@
       else if(cur) { cur.style.display='none'; }
       const note=document.querySelector('.fs-modal-note');
       const btn=document.querySelector('.fs-connect-btn');
-      if(!window.showDirectoryPicker) {
-        if(note) note.innerHTML='<b>Browser non supportato.</b> Apri questo file con <b>Chrome</b> o <b>Microsoft Edge</b> per selezionare una cartella sul disco. Su Brave: disabilita gli Scudi (icona del leone) per questa pagina e ricarica.';
-        if(btn) btn.style.display='none';
-      } else {
-        if(note) note.innerHTML='<b>Google Drive / Dropbox:</b> clicca &ldquo;Seleziona cartella&rdquo; &rarr; naviga nella cartella sincronizzata di Google Drive o Dropbox sul tuo computer &rarr; conferma. I file vengono sincronizzati automaticamente.';
-        if(btn) btn.style.display='';
-      }
+      if(note) note.innerHTML='<b>Google Drive / Dropbox:</b> clicca &ldquo;Seleziona cartella&rdquo; &rarr; naviga nella cartella sincronizzata di Google Drive o Dropbox sul tuo computer &rarr; conferma.<br><br>Se il pulsante non risponde, apri il file con <b>Chrome</b> o <b>Edge</b> (Brave: disabilita Shields per questa pagina).';
+      if(btn) btn.style.display='';
       document.getElementById('fs-modal-ov').classList.add('open');
     }
     function closeFSModal() { document.getElementById('fs-modal-ov').classList.remove('open'); }
