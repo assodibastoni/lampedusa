@@ -639,6 +639,46 @@
       .agenda-cal-wrap { border-right: none; border-bottom: 1px solid rgba(200,169,110,0.1) }
       .appt-field-row { grid-template-columns: 1fr 1fr }
     }
+
+    /* ── SIDEBAR AGENDA PANEL ── */
+    .sb-ag-btn-row {
+      padding: 12px 16px 10px;
+      border-bottom: 1px solid rgba(200,169,110,0.08);
+      flex-shrink: 0;
+    }
+    .sb-ag-today-hdr {
+      padding: 8px 16px 5px;
+      font-family: var(--font-ui); font-size: 6px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--gold); font-weight: 600;
+      border-bottom: 1px solid rgba(200,169,110,0.06); flex-shrink: 0;
+    }
+    .sb-appt-item {
+      padding: 8px 16px 9px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      border-left: 2px solid var(--gold-dark);
+      display: flex; gap: 8px; align-items: flex-start;
+      cursor: pointer; transition: all .15s;
+    }
+    .sb-appt-item:hover { background: rgba(200,169,110,0.06); border-left-color: var(--gold) }
+    .sb-appt-time {
+      font-family: var(--font-ui); font-size: 9px; letter-spacing: 1px;
+      color: var(--gold); font-weight: 700; flex-shrink: 0; min-width: 34px;
+      padding-top: 1px;
+    }
+    .sb-appt-info { flex: 1; min-width: 0 }
+    .sb-appt-name {
+      font-family: var(--font-display); font-size: 12px; color: var(--cream);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sb-appt-svc {
+      font-family: var(--font-ui); font-size: 6px; letter-spacing: 1.5px;
+      text-transform: uppercase; color: rgba(200,169,110,0.45); margin-top: 1px;
+    }
+    .sb-ag-empty {
+      padding: 24px 16px; text-align: center;
+      color: rgba(200,169,110,0.25); font-family: var(--font-display);
+      font-style: italic; font-size: 11px; line-height: 1.8;
+    }
   </style>
 </head>
 
@@ -691,6 +731,7 @@
       <button class="sbtab" id="tab-agenda" onclick="switchTab('agenda')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/></svg>
         Agenda
+        <span class="sbtab-badge" id="sbtab-agenda-badge"></span>
       </button>
     </div>
 
@@ -702,15 +743,15 @@
     </div>
 
     <!-- PANEL: AGENDA -->
-    <div class="sbpanel" id="panel-agenda" style="display:none;align-items:center;justify-content:center">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:40px 20px;text-align:center">
-        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(200,169,110,0.25)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="width:36px;height:36px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:rgba(200,169,110,0.3);line-height:1.7">Gestisci prenotazioni<br>e appuntamenti</div>
-        <button class="sbb pr" onclick="openAgenda();cSB()">
+    <div class="sbpanel" id="panel-agenda" style="display:none">
+      <div class="sb-ag-btn-row">
+        <button class="sbb pr" style="width:100%;justify-content:center" onclick="openAgenda();cSB()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M12 14v4M10 16h4"/></svg>
           Apri Agenda
         </button>
       </div>
+      <div class="sb-ag-today-hdr">Oggi &mdash; <span id="sb-ag-date-lbl"></span></div>
+      <div class="sblist" id="sb-ag-list"></div>
     </div>
 
     <!-- PANEL: SCADENZE -->
@@ -1434,6 +1475,7 @@
       document.getElementById('tab-clienti').classList.toggle('active', tab === 'clienti');
       document.getElementById('tab-scadenze').classList.toggle('active', tab === 'scadenze');
       document.getElementById('tab-agenda').classList.toggle('active', tab === 'agenda');
+      if (tab === 'agenda') renderSidebarAgenda();
     }
 
     /* ═══════════════ AGENDA ═══════════════ */
@@ -1585,6 +1627,36 @@
       closeApptModal();
       renderAgendaCal(); renderAgendaDay(agendaSelDate);
       toast('Prenotazione eliminata');
+    }
+
+    function renderSidebarAgenda() {
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      const dateLbl = document.getElementById('sb-ag-date-lbl');
+      if (dateLbl) dateLbl.textContent = today.getDate() + ' ' + MONTHS_IT_GEN[today.getMonth()] + ' ' + today.getFullYear();
+      const list = document.getElementById('sb-ag-list');
+      if (!list) return;
+      const ag = gAg();
+      const todayAppts = Object.entries(ag)
+        .filter(([,a]) => a.date === todayStr)
+        .sort((a,b) => (a[1].time||'').localeCompare(b[1].time||''));
+      const badge = document.getElementById('sbtab-agenda-badge');
+      if (badge) {
+        if (todayAppts.length) { badge.textContent = todayAppts.length; badge.classList.add('visible'); }
+        else { badge.classList.remove('visible'); }
+      }
+      if (!todayAppts.length) {
+        list.innerHTML = '<div class="sb-ag-empty">Nessun appuntamento oggi.<br><em>Apri l\'agenda per aggiungerne uno.</em></div>';
+        return;
+      }
+      list.innerHTML = todayAppts.map(([, a]) =>
+        '<div class="sb-appt-item" onclick="openAgenda();cSB()">' +
+        '<div class="sb-appt-time">' + (a.time || '--:--') + '</div>' +
+        '<div class="sb-appt-info">' +
+        '<div class="sb-appt-name">' + (a.clientName || '&mdash;') + '</div>' +
+        '<div class="sb-appt-svc">' + (a.service || '') + '</div>' +
+        '</div></div>'
+      ).join('');
     }
     bG(A1, 'ag', 'an1'); bG(A2, 'ag2', 'an2'); bA();
     try { const as = JSON.parse(localStorage.getItem(AK) || 'null'); if (as && as.data) { aD(as.data); if (as.cid) { const arch = gA(); if (arch[as.cid]) { cid = as.cid; vid = as.vid || null; uTB(arch[as.cid]); rVB(arch[as.cid]); sRO(false); dirty = true; document.getElementById('udot').classList.add('on'); } } } } catch (e) { console.warn(e); }
