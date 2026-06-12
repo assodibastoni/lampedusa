@@ -381,12 +381,17 @@
       .tbab svg { width: 10px; height: 10px }
       .tbt { font-size: 12px }
       .tbst { padding-left: 26px; font-size: 6px }
+      /* Action buttons row: compact, no gaps */
+      .tb-actions { gap: 4px; padding-top: 6px; }
       /* Hide text labels on small buttons, keep icons */
-      .tbb { padding: 7px 8px; font-size: 0; letter-spacing: 0; min-width: 30px; justify-content: center }
+      .tbb { padding: 6px 8px; font-size: 0; letter-spacing: 0; min-width: 28px; justify-content: center }
       .tbb svg { width: 11px; height: 11px; margin: 0 }
       /* Salva visita — keep full label but compact */
-      #bsv { font-size: 6.5px; letter-spacing: 1.5px; padding: 7px 10px }
+      #bsv { font-size: 6px; letter-spacing: 1px; padding: 6px 10px; min-width: auto }
       .tbsp { display: none }
+      /* FS chip compact */
+      .fs-chip { font-size: 5.5px; letter-spacing: 1px; padding: 3px 6px; }
+      .fs-chip svg { width: 8px; height: 8px }
       /* Visit bar */
       .vbar { padding: 7px 10px; gap: 6px }
       .vbc { font-size: 9px; padding: 3px 8px }
@@ -1750,7 +1755,7 @@
       if(_fsOk && _dh) {
         el.innerHTML='<button class="fs-chip connected" onclick="openFSModal()" title="Cartella connessa — clicca per cambiare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>'+(_dh.name||'Cartella')+'</button>';
       } else if(!window.showDirectoryPicker) {
-        el.innerHTML='<button class="fs-chip unsupported" title="Usa Chrome o Edge per il salvataggio su file. Su questo browser i dati sono nel browser.">Solo browser</button>';
+        el.innerHTML='<button class="fs-chip unsupported" onclick="openFSModal()" style="cursor:pointer" title="Clicca per informazioni">Solo browser</button>';
       } else {
         el.innerHTML='<button class="fs-chip disconnected" onclick="openFSModal()">&#9888; Nessuna cartella</button>';
       }
@@ -1760,9 +1765,18 @@
       const cur=document.getElementById('fs-modal-cur'), val=document.getElementById('fs-modal-cur-val');
       if(_dh && cur && val) { cur.style.display='block'; val.textContent=_dh.name||'Cartella'; }
       else if(cur) { cur.style.display='none'; }
+      const note=document.querySelector('.fs-modal-note');
+      const btn=document.querySelector('.fs-connect-btn');
+      if(!window.showDirectoryPicker) {
+        if(note) note.innerHTML='<b>Browser non supportato.</b> Apri questo file con <b>Chrome</b> o <b>Microsoft Edge</b> per selezionare una cartella sul disco. Su Brave: disabilita gli Scudi (icona del leone) per questa pagina e ricarica.';
+        if(btn) btn.style.display='none';
+      } else {
+        if(note) note.innerHTML='<b>Google Drive / Dropbox:</b> clicca &ldquo;Seleziona cartella&rdquo; &rarr; naviga nella cartella sincronizzata di Google Drive o Dropbox sul tuo computer &rarr; conferma. I file vengono sincronizzati automaticamente.';
+        if(btn) btn.style.display='';
+      }
       document.getElementById('fs-modal-ov').classList.add('open');
     }
-    function closeFSModal() { document.getElementById('fs-modal-ov').classList.remove('open'); localStorage.setItem('_fsInfoSeen','1'); }
+    function closeFSModal() { document.getElementById('fs-modal-ov').classList.remove('open'); }
 
     async function _loadFolder() {
       const archFile=await _fsRead('archivio.json',null);
@@ -1796,10 +1810,7 @@
       bG(A1,'ag','an1'); bG(A2,'ag2','an2'); bA();
       window.addEventListener('beforeunload',e=>{ if(dirty){ e.preventDefault(); e.returnValue=''; } });
       _loadFromLS(); _upFSStatus();
-      if(!window.showDirectoryPicker) {
-        if(!localStorage.getItem('_fsInfoSeen')) openFSModal();
-        return;
-      }
+      if(!window.showDirectoryPicker) return;
       try {
         const h=await _idbGet('dh');
         if(h) {
