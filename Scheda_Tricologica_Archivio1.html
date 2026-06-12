@@ -1626,9 +1626,10 @@
     function delC(id, event) {
       event.stopPropagation();
       const arch = gA(), name = cN(arch[id] || {});
-      if (!confirm('Eliminare definitivamente "' + name + '" e tutte le sue visite?')) return;
+      if (!confirm('Eliminare definitivamente "' + name + '" e tutte le sue visite' + (_dh ? ' e le foto dalla cartella' : '') + '?')) return;
       delete arch[id]; sA(arch);
       if (cid === id) { cid = null; vid = null; clF(); sRO(false); mS(); document.getElementById('vbar').classList.remove('on'); document.getElementById('photo-sect').classList.remove('on'); if(_dh) _fsWrite('autosave.json',{cid:null,vid:null,data:{}}); else localStorage.removeItem(AK); }
+      _deleteClientDir(id);
       rCL(); toast('Cliente eliminato');
     }
     function uTB(client) { const s = document.getElementById('tbst'); const n = cN(client); s.textContent = n; s.classList.toggle('on', !!n); }
@@ -2003,6 +2004,16 @@
     }
     async function _deletePhoto(clientId,dateStr,filename) {
       try { const dir=await _getClientDir(clientId),dd=await dir.getDirectoryHandle(dateStr); await dd.removeEntry(filename); } catch {}
+    }
+    async function _deleteClientDir(clientId) {
+      if(!_dh) return;
+      const fn=_cDirMap[clientId]; if(!fn) return;
+      try {
+        const base=await _dh.getDirectoryHandle('clienti');
+        await base.removeEntry(fn,{recursive:true});
+        delete _cDirMap[clientId];
+        await _fsWrite('_clienti_dirs.json',_cDirMap);
+      } catch(e) { console.warn('deleteClientDir',e); }
     }
     function triggerPhotoUpload() {
       if(!_dh) { toast('Connetti una cartella per usare le foto'); return; }
