@@ -733,6 +733,11 @@
     .fs-connect-btn svg { width: 10px; height: 10px }
     .fs-skip-btn { font-family: var(--font-ui); font-size: 7px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; padding: 9px 14px; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.25); background: transparent; cursor: pointer; transition: all .2s }
     .fs-skip-btn:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.4) }
+    .fs-reconnect { padding: 14px 16px; border: 1px solid rgba(200,169,110,0.35); background: rgba(200,169,110,0.06); display: flex; flex-direction: column; gap: 6px }
+    .fs-reconnect-lbl { font-family: var(--font-ui); font-size: 6px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); opacity: .75 }
+    .fs-reconnect-name { font-family: var(--font-display); font-size: 15px; color: var(--cream); font-weight: 300 }
+    .fs-reconnect-btn { font-family: var(--font-ui); font-size: 7px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 700; padding: 10px 18px; border: none; color: #1a1400; background: var(--gold); cursor: pointer; transition: all .2s; align-self: flex-start; margin-top: 4px }
+    .fs-reconnect-btn:hover { background: var(--gold-light) }
 
     /* ── FOLDER SETUP BANNER ── */
     #fs-banner {
@@ -1426,7 +1431,12 @@
       </div>
       <div class="fs-modal-body">
         <div class="fs-modal-desc">Seleziona una cartella sul tuo dispositivo dove salvare archivio, prenotazioni e lavoro in corso. I file vengono scritti direttamente sul disco — nessun dato nel browser.</div>
-        <div class="fs-modal-note"><b>Google Drive / Dropbox:</b> apri il selettore &rarr; naviga nella cartella sincronizzata di Google Drive o Dropbox sul tuo computer &rarr; clicca &ldquo;Seleziona&rdquo;. I dati verranno sincronizzati automaticamente.<br><br><b>Brave / Firefox:</b> se il pulsante non funziona, apri il file con <b>Chrome</b> o <b>Edge</b>.</div>
+        <div id="fs-reconnect" style="display:none" class="fs-reconnect">
+          <div class="fs-reconnect-lbl">Ultima cartella collegata</div>
+          <div class="fs-reconnect-name" id="fs-reconnect-name">—</div>
+          <button class="fs-reconnect-btn" onclick="reconnectFolder()">&#8635;&ensp;Riconnetti</button>
+        </div>
+        <div class="fs-modal-note"><b>Google Drive / Dropbox:</b> apri il selettore &rarr; naviga nella cartella sincronizzata di Google Drive o Dropbox sul tuo computer &rarr; clicca &ldquo;Seleziona&rdquo;. I dati verranno sincronizzati automaticamente.<br><br>Su Brave: disabilita Shields (leone &#129466; in alto a destra) e ricarica.</div>
         <div class="fs-modal-cur" id="fs-modal-cur">
           <div class="fs-modal-cur-lbl">Cartella connessa</div>
           <div class="fs-modal-cur-val" id="fs-modal-cur-val"></div>
@@ -1869,6 +1879,16 @@
       const cur=document.getElementById('fs-modal-cur'), val=document.getElementById('fs-modal-cur-val');
       if(_dh && cur && val) { cur.style.display='block'; val.textContent=_dh.name||'Cartella'; }
       else if(cur) { cur.style.display='none'; }
+      // Show reconnect button if there's a saved handle but no active connection
+      const reconnEl=document.getElementById('fs-reconnect');
+      if(!_dh && reconnEl) {
+        const savedH=await _idbGet('dh');
+        if(savedH) {
+          reconnEl.style.display='';
+          const nameEl=document.getElementById('fs-reconnect-name');
+          if(nameEl) nameEl.textContent=savedH.name||'Cartella precedente';
+        } else { reconnEl.style.display='none'; }
+      } else if(reconnEl) { reconnEl.style.display='none'; }
       const brave=await _isBrave();
       if(brave && !window.showDirectoryPicker) {
         _applyBraveNote();
@@ -1879,6 +1899,14 @@
         if(btn) btn.style.display='';
       }
       document.getElementById('fs-modal-ov').classList.add('open');
+    }
+    async function reconnectFolder() {
+      const h=await _idbGet('dh'); if(!h) { toast('Nessuna cartella salvata'); return; }
+      try {
+        const p=await h.requestPermission({mode:'readwrite'});
+        if(p==='granted') { _dh=h; await _loadFolder(); _upFSStatus(); closeFSModal(); toast('Cartella riconnessa'); }
+        else { toast('Permesso negato — usa "Seleziona cartella"'); }
+      } catch(e) { if(e.name!=='AbortError') toast('Errore — usa "Seleziona cartella"'); }
     }
     function closeFSModal() { document.getElementById('fs-modal-ov').classList.remove('open'); }
 
