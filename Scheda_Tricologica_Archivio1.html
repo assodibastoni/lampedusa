@@ -1,0 +1,2158 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archivio Clienti · Consulenza Trico-Cosmetica · Antonio Silvia</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Josefin+Sans:wght@200;300;400;600&display=swap"
+    rel="stylesheet">
+  <style>
+    @page { size: A4; margin: 0 }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box }
+
+    :root {
+      --black:      #080808;
+      --charcoal:   #111111;
+      --dark:       #1a1a1a;
+      --gold:       #c8a96e;
+      --gold-light: #e4c98d;
+      --gold-dark:  #a07840;
+      --beige:      #f0e9dc;
+      --beige-mid:  #e8dece;
+      --cream:      #faf7f2;
+      --white:      #ffffff;
+      --gray:       #888880;
+      --gray-light: #cccccc;
+
+      --doc-ink:        #1e1b17;
+      --doc-ink-soft:   #2e2a24;
+      --doc-white:      #fffef9;
+      --doc-cream:      #f7f3ea;
+      --doc-parchment:  #ede5d5;
+      --doc-grey-line:  #ddd6c6;
+      --doc-grey-mid:   #c8bfaf;
+      --doc-grey-text:  #948c7e;
+      --doc-grey-soft:  #f4f0e7;
+      --doc-section-bg: #f0ebe0;
+      --doc-gold:       #9a6f30;
+      --doc-gold-pale:  #e8d5aa;
+      --doc-gold-rule:  #b08040;
+
+      --font-display: 'Cormorant Garamond', serif;
+      --font-ui:      'Josefin Sans', sans-serif;
+      --sw: 300px;
+      --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    html, body {
+      font-family: var(--font-ui);
+      color: var(--beige);
+      font-size: 9px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      background: var(--black);
+    }
+    body { padding: 0; margin: 0 }
+    ::-webkit-scrollbar { width: 4px }
+    ::-webkit-scrollbar-track { background: var(--black) }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px }
+
+    /* ── OVERLAY ── */
+    #ov {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.6);
+      opacity: 0; pointer-events: none;
+      transition: opacity .28s ease;
+    }
+    #ov.on { opacity: 1; pointer-events: all }
+
+    /* ── SIDEBAR ── */
+    #sb {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: var(--sw);
+      background: var(--charcoal);
+      border-right: 1px solid rgba(200,169,110,0.12);
+      z-index: 210;
+      display: flex; flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform .35s cubic-bezier(.25,.46,.45,.94);
+      box-shadow: 4px 0 40px rgba(0,0,0,0.5);
+    }
+    #sb.open { transform: translateX(0) }
+
+    .sbh {
+      padding: 22px 20px 14px;
+      border-bottom: 1px solid rgba(200,169,110,0.1);
+      flex-shrink: 0;
+    }
+    .sblogo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px }
+    .sblm {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .sbbrand { font-family: var(--font-display); font-size: 14px; font-weight: 400; letter-spacing: 4px; text-transform: uppercase; color: var(--cream); line-height: 1.2 }
+    .sbbrand span { font-family: var(--font-ui); font-size: 6px; letter-spacing: 3.5px; text-transform: uppercase; color: var(--gold); margin-top: 3px; display: block; font-weight: 600 }
+
+    .sbsw { position: relative }
+    .sbsi {
+      width: 100%; font-family: var(--font-ui); font-size: 8px; letter-spacing: 1.5px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(200,169,110,0.12);
+      color: var(--beige); padding: 8px 10px 8px 30px; outline: none;
+      transition: border-color .3s, background .3s;
+    }
+    .sbsi::placeholder { color: rgba(200,169,110,0.3); font-style: italic }
+    .sbsi:focus { border-color: rgba(200,169,110,0.4); background: rgba(255,255,255,0.06) }
+    .sbsico { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 11px; height: 11px; color: rgba(200,169,110,0.35); pointer-events: none }
+
+    .sbact {
+      padding: 10px 20px;
+      border-bottom: 1px solid rgba(200,169,110,0.07);
+      flex-shrink: 0; display: flex; gap: 6px;
+    }
+    .sbb {
+      flex: 1; font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 2.5px;
+      text-transform: uppercase; font-weight: 600; padding: 8px 6px;
+      border: 1px solid rgba(200,169,110,0.15); background: transparent;
+      color: rgba(200,169,110,0.5); cursor: pointer;
+      transition: all var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .sbb svg { width: 9px; height: 9px; flex-shrink: 0 }
+    .sbb:hover { border-color: var(--gold); color: var(--gold); background: rgba(200,169,110,0.06) }
+    .sbb.pr { border-color: rgba(200,169,110,0.4); color: var(--gold-light) }
+    .sbb.pr:hover { background: var(--gold-dark); color: var(--white); border-color: var(--gold-dark) }
+
+    .sbst { padding: 8px 20px; font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(200,169,110,0.3); border-bottom: 1px solid rgba(200,169,110,0.06); flex-shrink: 0 }
+    .sbst span { color: var(--gold); font-weight: 600 }
+
+    /* ── SIDEBAR TABS ── */
+    .sbtabs { display: flex; flex-shrink: 0; border-bottom: 1px solid rgba(200,169,110,0.1) }
+    .sbtab {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 6px; background: transparent; border: none;
+      font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 2.5px;
+      text-transform: uppercase; font-weight: 600;
+      color: rgba(200,169,110,0.35); cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: all .2s;
+    }
+    .sbtab svg { width: 10px; height: 10px; flex-shrink: 0 }
+    .sbtab:hover { color: rgba(200,169,110,0.7) }
+    .sbtab.active { color: var(--gold); border-bottom-color: var(--gold) }
+    .sbtab-badge {
+      min-width: 14px; height: 14px; border-radius: 7px;
+      background: var(--gold-dark); color: var(--white);
+      font-size: 7px; font-weight: 700; letter-spacing: 0;
+      display: none; align-items: center; justify-content: center; padding: 0 4px;
+    }
+    .sbtab-badge.visible { display: flex }
+
+    .sbpanel { display: flex; flex-direction: column; flex: 1; overflow: hidden }
+    .sbpanel .sblist { flex: 1; overflow-y: auto; padding: 4px 0 }
+    .sblist::-webkit-scrollbar { width: 2px }
+    .sblist::-webkit-scrollbar-thumb { background: rgba(200,169,110,0.2) }
+    .sbempty { padding: 40px 20px; text-align: center; color: rgba(200,169,110,0.25); font-family: var(--font-display); font-style: italic; font-size: 12px; line-height: 1.7 }
+
+    .sbfu-wrap { flex: 1; overflow-y: auto }
+    .sbfu-empty { padding: 40px 20px; text-align: center; color: rgba(200,169,110,0.2); font-family: var(--font-display); font-style: italic; font-size: 12px; line-height: 1.7 }
+
+    /* CLIENT ITEMS */
+    .ci { padding: 10px 20px; cursor: pointer; border-left: 2px solid transparent; transition: all .2s; border-bottom: 1px solid rgba(255,255,255,0.03) }
+    .ci:hover { background: rgba(255,255,255,0.03); border-left-color: rgba(200,169,110,0.3) }
+    .ci.active { background: rgba(200,169,110,0.06); border-left-color: var(--gold) }
+    .cin { font-family: var(--font-display); font-size: 13px; font-weight: 400; color: var(--cream); letter-spacing: .3px; margin-bottom: 3px }
+    .cim { font-family: var(--font-ui); font-size: 6px; letter-spacing: 2px; text-transform: uppercase; color: rgba(200,169,110,0.3); display: flex; justify-content: space-between; align-items: center }
+    .civc { color: var(--gold) }
+    .cild { color: rgba(255,255,255,0.2) }
+    .cidel { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.15); padding: 2px; line-height: 0; transition: color .15s; flex-shrink: 0 }
+    .cidel:hover { color: #e05050 }
+    .cidel svg { width: 9px; height: 9px }
+
+    /* SCADENZE ITEMS */
+    .sbfui { padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; transition: background .2s }
+    .sbfui:hover { background: rgba(200,169,110,0.05) }
+    .sbfin { font-family: var(--font-display); font-size: 13px; color: var(--cream); margin-bottom: 3px }
+    .sbfid { font-family: var(--font-ui); font-size: 6px; letter-spacing: 2px; text-transform: uppercase; color: #e8a060 }
+    .sbfid.urgent { color: #e05050 }
+    .sbfid.today { color: var(--gold) }
+
+    .sbft { padding: 10px 20px; border-top: 1px solid rgba(200,169,110,0.08); display: flex; gap: 6px; flex-shrink: 0 }
+
+    /* ── MAIN APP ── */
+    #app { min-height: 100vh; padding: 28px 16px 60px }
+
+    /* ── TOOLBAR ── */
+    .tb {
+      max-width: 210mm; margin: 0 auto 14px;
+      background: var(--charcoal);
+      border: 1px solid rgba(200,169,110,0.12);
+      border-top: 2px solid var(--gold);
+      padding: 10px 18px 8px;
+      display: flex; flex-direction: column; gap: 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .tbl { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; }
+    .tbab {
+      font-family: var(--font-ui); font-size: 7px; letter-spacing: 3px;
+      text-transform: uppercase; font-weight: 600; padding: 8px 14px;
+      border: 1px solid rgba(200,169,110,0.3);
+      background: rgba(200,169,110,0.08); color: var(--gold-light);
+      cursor: pointer; transition: all var(--transition);
+      display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
+    }
+    .tbab:hover { background: var(--gold-dark); color: var(--white); border-color: var(--gold-dark) }
+    .tbab svg { width: 11px; height: 11px; flex-shrink: 0 }
+    .tbsp { width: 1px; height: 16px; background: rgba(200,169,110,0.15); flex-shrink: 0 }
+    .tbi { display: flex; flex-direction: column; gap: 2px; min-width: 0 }
+    .tbt { font-family: var(--font-display); font-size: 14px; font-weight: 300; color: var(--cream); display: flex; align-items: center; gap: 10px; letter-spacing: 1px }
+    .tbt::before { content: ""; width: 24px; height: 1px; background: linear-gradient(90deg, var(--gold), transparent); flex-shrink: 0 }
+    .tbst { font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); padding-left: 34px; display: none }
+    .tbst.on { display: block }
+    .tbb {
+      font-family: var(--font-ui); font-size: 7px; letter-spacing: 2.5px;
+      text-transform: uppercase; font-weight: 600; padding: 7px 12px;
+      border: 1px solid rgba(200,169,110,0.15); background: transparent;
+      color: rgba(200,169,110,0.45); cursor: pointer;
+      transition: all var(--transition);
+      display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+    }
+    .tbb:hover { border-color: var(--gold); color: var(--gold); background: rgba(200,169,110,0.06) }
+    .tbb.pr { border-color: rgba(200,169,110,0.35); color: var(--gold-light) }
+    .tbb.pr:hover { background: var(--gold-dark); color: var(--white); border-color: var(--gold-dark) }
+    .tbb.sa { border-color: rgba(200,169,110,0.4); color: var(--gold); background: rgba(200,169,110,0.08) }
+    .tbb svg { width: 10px; height: 10px; flex-shrink: 0 }
+    .udot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); display: none; flex-shrink: 0 }
+    .udot.on { display: inline-block }
+    .tb-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; border-top: 1px solid rgba(200,169,110,0.08); padding-top: 8px; }
+
+    /* ── VISIT BAR ── */
+    .vbar {
+      max-width: 210mm; margin: 0 auto 12px;
+      background: var(--charcoal); border: 1px solid rgba(200,169,110,0.1);
+      border-top: 1px solid rgba(200,169,110,0.2);
+      padding: 8px 18px; display: none; align-items: center; gap: 10px; flex-wrap: wrap;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    .vbar.on { display: flex }
+    .vbl { font-family: var(--font-ui); font-size: 6px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; flex-shrink: 0 }
+    .vblist { display: flex; gap: 5px; flex-wrap: wrap; flex: 1 }
+    .vbc { font-family: var(--font-display); font-size: 11px; font-weight: 400; padding: 3px 12px; border: 1px solid rgba(200,169,110,0.15); color: rgba(200,169,110,0.5); cursor: pointer; transition: all .2s; white-space: nowrap; background: transparent }
+    .vbc:hover { border-color: rgba(200,169,110,0.4); color: var(--gold-light) }
+    .vbc.active { background: var(--gold-dark); color: var(--white); border-color: var(--gold-dark) }
+    .vbnew { font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 600; padding: 5px 12px; border: 1px solid rgba(200,169,110,0.3); color: var(--gold); cursor: pointer; background: transparent; transition: all .2s; display: flex; align-items: center; gap: 5px; flex-shrink: 0 }
+    .vbnew:hover { background: var(--gold-dark); color: var(--white); border-color: var(--gold-dark) }
+    .vbnew svg { width: 9px; height: 9px }
+    .vbrob { font-family: var(--font-ui); font-size: 6px; letter-spacing: 2px; text-transform: uppercase; color: rgba(200,169,110,0.4); border: 1px solid rgba(200,169,110,0.12); padding: 3px 10px; display: none; flex-shrink: 0 }
+    .vbrob.on { display: block }
+
+    /* ── STATS PANEL ── */
+    .stp { max-width: 210mm; margin: 0 auto 14px; display: none }
+    .stp.on { display: block }
+    .stg { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5px; margin-bottom: 1.5px }
+    .stc { background: var(--charcoal); border-bottom: 1px solid rgba(200,169,110,0.08); padding: 16px 16px 14px; position: relative; overflow: hidden }
+    .stc::after { content: ""; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--gold); transition: width .5s ease }
+    .stc:hover::after { width: 100% }
+    .stn { font-family: var(--font-display); font-size: 32px; font-weight: 300; color: var(--cream); line-height: 1 }
+    .stl { font-family: var(--font-ui); font-size: 6px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-top: 5px; font-weight: 600 }
+    .str { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5px }
+    .stb { background: var(--charcoal); padding: 14px 16px }
+    .stbt { font-family: var(--font-ui); font-size: 6px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(200,169,110,0.1) }
+    .stbr { display: flex; align-items: center; gap: 8px; margin-bottom: 5px }
+    .stbrl { font-family: var(--font-display); font-size: 11px; color: var(--beige-mid); width: 120px; flex-shrink: 0 }
+    .stbrtr { flex: 1; height: 2px; background: rgba(255,255,255,0.06) }
+    .stbrf { height: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold)); transition: width .5s ease }
+    .stbrc { font-family: var(--font-ui); font-size: 6px; color: var(--gold); width: 20px; text-align: right; flex-shrink: 0 }
+    .stcb { display: block; margin: 12px auto 0; font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; padding: 7px 20px; border: 1px solid rgba(200,169,110,0.2); color: rgba(200,169,110,0.5); cursor: pointer; background: transparent; transition: all .2s }
+    .stcb:hover { border-color: var(--gold); color: var(--gold) }
+
+    /* ── READONLY BANNER ── */
+    .rban { max-width: 210mm; margin: 0 auto 10px; background: rgba(200,169,110,0.06); border: 1px solid rgba(200,169,110,0.2); padding: 7px 18px; font-family: var(--font-ui); font-size: 7px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); text-align: center; display: none }
+    .rban.on { display: block }
+
+    /* ── PAGE A4 (stays light for print) ── */
+    .page { width: 210mm; padding: 11mm 13mm 9mm 13mm; background: var(--doc-white); position: relative; margin: 0 auto; box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3) }
+    .page::before { content: ""; position: absolute; inset: 4mm; border: 0.3px solid var(--doc-grey-line); pointer-events: none; z-index: 0 }
+    .page.rom { opacity: .82 }
+    .page.rom input, .page.rom textarea, .page.rom .dot-i, .page.rom .scale-cell, .page.rom .radio-pill label { pointer-events: none; cursor: default }
+    .corner { position: absolute; width: 12px; height: 12px; border-color: var(--doc-gold-rule); z-index: 1 }
+    .corner-tl { top: 3mm; left: 3mm; border-top: .5px solid; border-left: .5px solid }
+    .corner-tr { top: 3mm; right: 3mm; border-top: .5px solid; border-right: .5px solid }
+    .corner-bl { bottom: 3mm; left: 3mm; border-bottom: .5px solid; border-left: .5px solid }
+    .corner-br { bottom: 3mm; right: 3mm; border-bottom: .5px solid; border-right: .5px solid }
+    .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 9px; position: relative; z-index: 1; border-bottom: 0.3px solid var(--doc-grey-line) }
+    .header::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: .5px; background: var(--doc-gold-rule); opacity: .5 }
+    .logo-block { display: flex; align-items: center; gap: 11px }
+    .logo-mark { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; flex-shrink: 0 }
+    .logo-text { line-height: 1.3 }
+    .logo-text .brand { font-family: var(--font-display); font-size: 14px; font-weight: 400; letter-spacing: 5px; text-transform: uppercase; color: var(--doc-ink); display: block }
+    .logo-text .tag { font-size: 6px; letter-spacing: 3.5px; text-transform: uppercase; color: var(--doc-gold); margin-top: 2px; display: block }
+    .header-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 3px }
+    .header-right .studio-label { font-size: 5.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--doc-grey-text) }
+    .header-right .ref-row { display: flex; align-items: center; gap: 4px; font-size: 6px; letter-spacing: 2px; text-transform: uppercase; color: var(--doc-grey-text) }
+    .ref-input { font-family: var(--font-display); font-size: 13px; font-weight: 300; letter-spacing: 1px; color: var(--doc-ink); border: none; outline: none; background: transparent; border-bottom: .3px solid var(--doc-grey-mid); width: 100px; text-align: right; padding: 1px 2px; transition: border-color .2s }
+    .ref-input:focus { border-bottom-color: var(--doc-gold) }
+    .title-block { text-align: center; padding: 11px 0 9px; position: relative; z-index: 1 }
+    .eyebrow { font-size: 5.5px; letter-spacing: 5.5px; text-transform: uppercase; color: var(--doc-gold); margin-bottom: 6px }
+    .title-block h1 { font-family: var(--font-display); font-weight: 300; font-size: 23px; letter-spacing: 1px; color: var(--doc-ink); line-height: 1.1 }
+    .title-block h1 em { font-style: italic; font-weight: 300; color: var(--doc-gold) }
+    .ornament { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 8px }
+    .ornament .line { width: 60px; height: .3px; background: linear-gradient(90deg, transparent 0%, var(--doc-gold-rule) 50%, transparent 100%) }
+    .ornament .diamond { width: 4px; height: 4px; background: var(--doc-gold-rule); transform: rotate(45deg); flex-shrink: 0 }
+    .section { margin-top: 6px; position: relative; z-index: 1; border: .4px solid var(--doc-grey-line) }
+    .section-head { display: flex; align-items: center; gap: 8px; padding: 5px 10px; background: var(--doc-section-bg); border-bottom: .4px solid var(--doc-parchment) }
+    .section-num { font-family: var(--font-display); font-size: 10px; font-weight: 400; font-style: italic; color: var(--doc-gold-rule); letter-spacing: 1px; min-width: 16px }
+    .section-icon { width: 11px; height: 11px; color: var(--doc-gold-rule); flex-shrink: 0; opacity: .8 }
+    .section-title { font-size: 7px; letter-spacing: 3.5px; text-transform: uppercase; color: var(--doc-ink-soft); font-weight: 600; flex: 1 }
+    .section-deco { font-family: var(--font-display); font-style: italic; font-size: 8px; color: var(--doc-gold); opacity: .9 }
+    .section-body { padding: 7px 10px }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 18px; row-gap: 8px }
+    .field-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; column-gap: 14px; row-gap: 8px }
+    .field { display: flex; flex-direction: column }
+    .field-label { font-size: 5.5px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--doc-gold); margin-bottom: 3px; font-weight: 600 }
+    .f-input { font-family: var(--font-display); font-size: 12px; font-weight: 300; color: var(--doc-ink); border: none; outline: none; background: transparent; border-bottom: .3px solid var(--doc-grey-line); height: 17px; width: 100%; padding: 1px 2px; letter-spacing: .3px; transition: border-color .2s, background .2s }
+    .f-input:hover { border-bottom-color: var(--doc-gold-rule) }
+    .f-input:focus { border-bottom-color: var(--doc-gold); background: rgba(154,111,48,.04) }
+    ::placeholder { color: var(--doc-grey-mid); opacity: 1; font-style: italic }
+    .f-input::placeholder { font-family: var(--font-display); font-size: 11px; font-weight: 300; color: var(--doc-grey-mid); font-style: italic }
+    .note-area::placeholder { font-family: var(--font-display); font-size: 10px; font-weight: 300; color: var(--doc-grey-mid); font-style: italic }
+    .radio-group { display: flex; gap: 3px; flex-wrap: wrap }
+    .radio-pill input[type="radio"] { display: none }
+    .radio-pill label { font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 1.5px; padding: 2.5px 8px; border: .4px solid var(--doc-grey-line); cursor: pointer; color: var(--doc-grey-text); text-transform: uppercase; transition: all .15s; user-select: none; white-space: nowrap; display: block }
+    .radio-pill input[type="radio"]:checked + label { background: var(--doc-ink); color: var(--doc-white); border-color: var(--doc-ink) }
+    .radio-pill label:hover { border-color: var(--doc-gold-rule); color: var(--doc-ink-soft) }
+    .check-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px 12px }
+    .check-item { display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 9.5px; font-weight: 400; color: var(--doc-ink-soft); cursor: pointer; padding: 1.5px 2px; letter-spacing: .2px; transition: background .12s }
+    .check-item:hover { background: var(--doc-cream) }
+    .check-item input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 8px; height: 8px; border: .4px solid var(--doc-grey-mid); background: var(--doc-white); cursor: pointer; flex-shrink: 0; position: relative; margin: 0; transition: all .15s }
+    .check-item input[type="checkbox"]:checked { background: var(--doc-gold); border-color: var(--doc-gold) }
+    .check-item input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: var(--doc-white); font-size: 5.5px; font-weight: 700; top: 50%; left: 50%; transform: translate(-50%,-50%); line-height: 1 }
+    .check-item .label-text { flex: 1; line-height: 1.3 }
+    .check-intensity { display: flex; gap: 3px; margin-left: auto }
+    .dot-i { width: 5.5px; height: 5.5px; border-radius: 50%; border: .4px solid var(--doc-grey-mid); cursor: pointer; background: transparent; transition: all .14s; padding: 0 }
+    .dot-i:hover { border-color: var(--doc-gold-rule) }
+    .dot-i.active { background: var(--doc-gold-rule); border-color: var(--doc-gold-rule) }
+    .sub-label { font-size: 5.5px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--doc-gold); font-weight: 600; margin-bottom: 5px; margin-top: 9px; padding-bottom: 4px; border-bottom: .3px solid var(--doc-grey-line); display: block }
+    .sub-label:first-child { margin-top: 0 }
+    .notes-block { margin-top: 7px; padding-top: 6px; border-top: .3px solid var(--doc-grey-line) }
+    .notes-label { font-size: 5.5px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--doc-gold); margin-bottom: 4px; font-weight: 600 }
+    .note-area { font-family: var(--font-display); font-size: 11px; font-weight: 300; color: var(--doc-ink); line-height: 1.65; width: 100%; border: none; outline: none; background: repeating-linear-gradient(to bottom, transparent, transparent 16px, #ddd5c4 16px, #ddd5c4 16.3px); background-size: 100% 16.3px; resize: vertical; padding: 0 3px; letter-spacing: .2px; transition: background-color .18s }
+    .note-area:focus { background-color: rgba(154,111,48,.03) }
+    .note-area.xs { min-height: 22px; height: 22px }
+    .note-area.sm { min-height: 30px; height: 30px }
+    .note-area.md { min-height: 44px; height: 44px }
+    .note-area.lg { min-height: 60px; height: 60px }
+    .analysis-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px 16px }
+    .param { display: flex; flex-direction: column; gap: 3px }
+    .param-label { font-size: 5.5px; letter-spacing: 2px; text-transform: uppercase; color: var(--doc-gold); font-weight: 600 }
+    .scale { display: flex; align-items: center; gap: 4px }
+    .scale-bar { flex: 1; display: flex; gap: 1.5px }
+    .scale-cell { flex: 1; height: 7px; border: .4px solid var(--doc-grey-line); background: var(--doc-white); cursor: pointer; padding: 0; transition: all .14s }
+    .scale-cell:hover { background: var(--doc-parchment); border-color: var(--doc-gold-rule) }
+    .scale-cell.active { background: var(--doc-gold); border-color: var(--doc-gold) }
+    .scale-label { font-size: 5px; letter-spacing: .8px; color: var(--doc-grey-text); text-transform: uppercase; white-space: nowrap }
+    .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 18px }
+    .plan-item .plan-label { font-size: 5.5px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--doc-gold); margin-bottom: 3px; font-weight: 600 }
+    .followup-strip { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap }
+    .followup-strip .field { flex: 1; min-width: 100px }
+    .gdpr-row { margin-top: 7px; padding-top: 6px; border-top: .3px solid var(--doc-grey-line); display: flex; gap: 18px; flex-wrap: wrap }
+    .gdpr-item { display: flex; align-items: flex-start; gap: 6px; font-family: var(--font-display); font-size: 8px; font-weight: 300; color: var(--doc-grey-text); line-height: 1.5; cursor: pointer; flex: 1; min-width: 160px; letter-spacing: .2px }
+    .gdpr-item input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 8px; height: 8px; min-width: 8px; border: .4px solid var(--doc-grey-mid); background: var(--doc-white); cursor: pointer; position: relative; margin-top: 2px; transition: all .15s }
+    .gdpr-item input[type="checkbox"]:checked { background: var(--doc-gold); border-color: var(--doc-gold) }
+    .gdpr-item input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: var(--doc-white); font-size: 5.5px; font-weight: 700; top: 50%; left: 50%; transform: translate(-50%,-50%); line-height: 1 }
+    .signatures { margin-top: 9px; display: grid; grid-template-columns: 1fr 1fr; gap: 36px }
+    .sign-block { display: flex; flex-direction: column; align-items: center }
+    .sign-input { font-family: var(--font-display); font-style: italic; font-size: 15px; font-weight: 300; color: var(--doc-ink); text-align: center; border: none; outline: none; background: transparent; border-bottom: .3px solid var(--doc-grey-line); width: 100%; height: 24px; padding: 0 4px; letter-spacing: .3px; transition: border-color .18s }
+    .sign-input:hover { border-bottom-color: var(--doc-gold-rule) }
+    .sign-input:focus { border-bottom-color: var(--doc-gold) }
+    .sign-label { margin-top: 4px; font-size: 5.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--doc-grey-text); font-weight: 500 }
+    .sign-deco { font-family: var(--font-display); font-style: italic; font-size: 8px; color: var(--doc-gold); margin-top: 1px }
+    .footer { margin-top: 8px; padding-top: 5px; border-top: .3px solid var(--doc-grey-line); display: flex; justify-content: space-between; align-items: center; font-size: 5.5px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--doc-grey-text) }
+    .footer .gold { color: var(--doc-gold); letter-spacing: 3px }
+    .row-sep { border: none; border-top: .3px solid var(--doc-grey-line); margin: 7px 0 }
+
+    @media (max-width: 700px) {
+      #app { padding: 12px 8px 48px }
+      .tb { padding: 8px 10px; }
+      .tbl { padding-bottom: 6px; }
+      .tbab { padding: 7px 10px; font-size: 6.5px; letter-spacing: 2px }
+      .tbab svg { width: 10px; height: 10px }
+      .tbt { font-size: 12px }
+      .tbst { padding-left: 26px; font-size: 6px }
+      /* Action buttons row: compact, no gaps */
+      .tb-actions { gap: 4px; padding-top: 6px; }
+      /* Hide text labels on small buttons, keep icons */
+      .tbb { padding: 6px 8px; font-size: 0; letter-spacing: 0; min-width: 28px; justify-content: center }
+      .tbb svg { width: 11px; height: 11px; margin: 0 }
+      /* Salva visita — keep full label but compact */
+      #bsv { font-size: 6px; letter-spacing: 1px; padding: 6px 10px; min-width: auto }
+      .tbsp { display: none }
+      /* FS chip compact */
+      .fs-chip { font-size: 5.5px; letter-spacing: 1px; padding: 3px 6px; }
+      .fs-chip svg { width: 8px; height: 8px }
+      /* Visit bar */
+      .vbar { padding: 7px 10px; gap: 6px }
+      .vbc { font-size: 9px; padding: 3px 8px }
+      .vbnew { padding: 4px 8px; font-size: 6px }
+      /* Stats grid */
+      .stg { grid-template-columns: 1fr 1fr }
+      .str { grid-template-columns: 1fr }
+    }
+
+    @media print {
+      html, body { background: white; padding: 0 }
+      .tb, .vbar, .stp, .rban, #sb, #ov { display: none !important }
+      #app { padding: 0 }
+      .page { box-shadow: none; margin: 0; padding: 11mm 13mm 9mm 13mm }
+      .print-break { page-break-before: always }
+      #footer-p1 { display: flex !important }
+    }
+
+    .toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: var(--charcoal); color: var(--beige);
+      border: 1px solid rgba(200,169,110,0.2); border-top: 2px solid var(--gold);
+      padding: 10px 28px; font-family: var(--font-ui);
+      font-size: 7.5px; letter-spacing: 3px; text-transform: uppercase; font-weight: 600;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      opacity: 0; transition: all .3s ease; z-index: 999; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0) }
+    .toast::before { content: "— "; color: var(--gold) }
+
+    /* ── AGENDA OVERLAY ── */
+    .agenda-ov {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.88);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s ease;
+    }
+    .agenda-ov.open { opacity: 1; pointer-events: all }
+    .agenda-wrap {
+      background: var(--charcoal);
+      border: 1px solid rgba(200,169,110,0.2);
+      border-top: 3px solid var(--gold);
+      width: min(920px, 96vw); max-height: 90vh;
+      display: flex; flex-direction: column;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.7);
+      position: relative;
+    }
+    .agenda-hdr {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 52px 14px 20px;
+      border-bottom: 1px solid rgba(200,169,110,0.12);
+      flex-shrink: 0; min-width: 0;
+    }
+    .agenda-hdr-title {
+      font-family: var(--font-display); font-size: 18px; font-weight: 300;
+      color: var(--cream); letter-spacing: 1px; flex: 1; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .agenda-hdr-title em { color: var(--gold); font-style: italic }
+    .agenda-nav { display: flex; align-items: center; gap: 8px }
+    .agenda-nav-btn {
+      background: none; border: 1px solid rgba(200,169,110,0.2);
+      color: var(--gold); width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 16px; line-height: 1; transition: all .2s;
+    }
+    .agenda-nav-btn:hover { background: rgba(200,169,110,0.1); border-color: var(--gold) }
+    .agenda-nav-lbl {
+      font-family: var(--font-ui); font-size: 8px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--cream);
+      min-width: 140px; text-align: center; font-weight: 600;
+    }
+    .agenda-close {
+      position: absolute; top: 12px; right: 14px; z-index: 2;
+      background: none; border: 1px solid rgba(200,169,110,0.15);
+      color: rgba(200,169,110,0.5); width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 14px; transition: all .2s;
+    }
+    .agenda-close:hover { border-color: #e05050; color: #e05050 }
+    .agenda-body {
+      display: grid; grid-template-columns: 276px 1fr;
+      overflow: hidden; flex: 1; min-height: 0;
+    }
+    /* Calendar column */
+    .agenda-cal-wrap {
+      border-right: 1px solid rgba(200,169,110,0.1);
+      padding: 12px; overflow-y: auto;
+    }
+    .agenda-cal-wrap::-webkit-scrollbar { width: 2px }
+    .agenda-cal-wrap::-webkit-scrollbar-thumb { background: rgba(200,169,110,0.2) }
+    .agenda-cal-dow {
+      display: grid; grid-template-columns: repeat(7,1fr);
+      margin-bottom: 4px;
+    }
+    .agenda-cal-dow span {
+      font-family: var(--font-ui); font-size: 6px; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(200,169,110,0.4);
+      text-align: center; padding: 4px 2px;
+    }
+    .agenda-cal-days { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px }
+    .agenda-day {
+      aspect-ratio: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start; padding-top: 5px;
+      cursor: pointer; border: 1px solid transparent;
+      transition: background .14s; position: relative;
+    }
+    .agenda-day:hover { background: rgba(200,169,110,0.08) }
+    .agenda-day.other-month .agenda-day-num { color: rgba(255,255,255,0.12) }
+    .agenda-day.today { border-color: rgba(200,169,110,0.4) }
+    .agenda-day.today .agenda-day-num { color: var(--gold); font-weight: 700 }
+    .agenda-day.selected { background: rgba(200,169,110,0.12); border-color: var(--gold) }
+    .agenda-day-num {
+      font-family: var(--font-ui); font-size: 9px; color: var(--beige-mid); line-height: 1;
+    }
+    .agenda-day-dots {
+      display: flex; gap: 2px; margin-top: 3px; justify-content: center; flex-wrap: wrap;
+    }
+    .agenda-day-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold-dark) }
+    /* Day panel */
+    .agenda-day-panel { display: flex; flex-direction: column; overflow: hidden }
+    .agenda-day-hdr {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid rgba(200,169,110,0.1);
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+    }
+    .agenda-day-lbl {
+      font-family: var(--font-display); font-size: 14px; font-weight: 300;
+      color: var(--cream); letter-spacing: .5px;
+    }
+    .agenda-new-btn {
+      font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 2px;
+      text-transform: uppercase; font-weight: 600; padding: 7px 12px;
+      border: 1px solid rgba(200,169,110,0.3); background: transparent;
+      color: var(--gold); cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .agenda-new-btn:hover { background: var(--gold-dark); color: var(--white); border-color: var(--gold-dark) }
+    .agenda-new-btn svg { width: 9px; height: 9px }
+    .agenda-appts { flex: 1; overflow-y: auto; padding: 8px 16px }
+    .agenda-appts::-webkit-scrollbar { width: 2px }
+    .agenda-appts::-webkit-scrollbar-thumb { background: rgba(200,169,110,0.2) }
+    .agenda-empty-day {
+      padding: 40px 20px; text-align: center;
+      color: rgba(200,169,110,0.2); font-family: var(--font-display);
+      font-style: italic; font-size: 13px; line-height: 1.8;
+    }
+    /* Appointment card */
+    .appt-card {
+      display: flex; gap: 12px; padding: 10px 12px;
+      border-left: 2px solid var(--gold-dark);
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      margin-bottom: 6px; cursor: pointer; transition: all .15s;
+    }
+    .appt-card:hover { background: rgba(200,169,110,0.06); border-left-color: var(--gold) }
+    .appt-time-block {
+      display: flex; flex-direction: column; align-items: center;
+      min-width: 36px; flex-shrink: 0;
+    }
+    .appt-time {
+      font-family: var(--font-ui); font-size: 9px; letter-spacing: 1px;
+      color: var(--gold); font-weight: 700;
+    }
+    .appt-dur {
+      font-family: var(--font-ui); font-size: 6px; letter-spacing: 1px;
+      color: rgba(200,169,110,0.4); margin-top: 2px;
+    }
+    .appt-info { flex: 1; min-width: 0 }
+    .appt-client-name {
+      font-family: var(--font-display); font-size: 13px; font-weight: 400;
+      color: var(--cream); margin-bottom: 2px;
+    }
+    .appt-service-tag {
+      font-family: var(--font-ui); font-size: 6px; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(200,169,110,0.5);
+    }
+    .appt-notes-prev {
+      font-family: var(--font-display); font-size: 9px; color: rgba(255,255,255,0.28);
+      margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    /* Appointment modal */
+    .appt-modal-ov {
+      position: fixed; inset: 0; z-index: 400;
+      background: rgba(0,0,0,0.75);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s ease;
+    }
+    .appt-modal-ov.open { opacity: 1; pointer-events: all }
+    .appt-modal-box {
+      background: var(--charcoal);
+      border: 1px solid rgba(200,169,110,0.2);
+      border-top: 3px solid var(--gold);
+      width: min(480px, 96vw);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.65);
+    }
+    .appt-modal-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 13px 18px;
+      border-bottom: 1px solid rgba(200,169,110,0.1);
+    }
+    .appt-modal-hdr-title {
+      font-family: var(--font-display); font-size: 16px; font-weight: 300;
+      color: var(--cream); letter-spacing: 1px;
+    }
+    .appt-modal-close {
+      background: none; border: 1px solid rgba(200,169,110,0.15);
+      color: rgba(200,169,110,0.4); width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 13px; transition: all .2s;
+    }
+    .appt-modal-close:hover { border-color: #e05050; color: #e05050 }
+    .appt-modal-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 12px }
+    .appt-field-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px }
+    .appt-field { display: flex; flex-direction: column; gap: 4px }
+    .appt-field label {
+      font-family: var(--font-ui); font-size: 6px; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--gold); font-weight: 600;
+    }
+    .appt-field input, .appt-field select, .appt-field textarea {
+      font-family: var(--font-display); font-size: 12px; font-weight: 300;
+      color: var(--beige); background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(200,169,110,0.15); outline: none;
+      padding: 7px 10px; transition: border-color .2s; letter-spacing: .3px;
+    }
+    .appt-field input:focus, .appt-field select:focus, .appt-field textarea:focus {
+      border-color: rgba(200,169,110,0.45); background: rgba(255,255,255,0.06);
+    }
+    .appt-field input::placeholder, .appt-field textarea::placeholder {
+      color: rgba(200,169,110,0.25); font-style: italic;
+    }
+    .appt-field select option { background: var(--charcoal); color: var(--beige) }
+    .appt-field textarea { min-height: 52px; resize: vertical; font-size: 11px; line-height: 1.5 }
+    .appt-modal-ftr {
+      display: flex; gap: 8px; padding: 12px 18px; align-items: center;
+      border-top: 1px solid rgba(200,169,110,0.1);
+    }
+    .appt-btn {
+      font-family: var(--font-ui); font-size: 7px; letter-spacing: 2.5px;
+      text-transform: uppercase; font-weight: 600; padding: 8px 16px;
+      border: 1px solid; cursor: pointer; transition: all .2s;
+    }
+    .appt-btn-save { border-color: rgba(200,169,110,0.4); color: var(--gold-light); background: transparent; margin-left: auto }
+    .appt-btn-save:hover { background: var(--gold-dark); color: var(--white); border-color: var(--gold-dark) }
+    .appt-btn-cancel { border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.3); background: transparent }
+    .appt-btn-cancel:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.6) }
+    .appt-btn-del { border-color: rgba(224,80,80,0.3); color: rgba(224,80,80,0.6); background: transparent }
+    .appt-btn-del:hover { background: #e05050; color: var(--white); border-color: #e05050 }
+    @media (max-width: 700px) {
+      .agenda-body { grid-template-columns: 1fr; grid-template-rows: auto 1fr }
+      .agenda-cal-wrap { border-right: none; border-bottom: 1px solid rgba(200,169,110,0.1) }
+      .appt-field-row { grid-template-columns: 1fr 1fr }
+    }
+
+    /* ── SIDEBAR AGENDA PANEL ── */
+    .sb-ag-btn-row {
+      padding: 12px 16px 10px;
+      border-bottom: 1px solid rgba(200,169,110,0.08);
+      flex-shrink: 0;
+    }
+    .sb-ag-today-hdr {
+      padding: 8px 16px 5px;
+      font-family: var(--font-ui); font-size: 6px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--gold); font-weight: 600;
+      border-bottom: 1px solid rgba(200,169,110,0.06); flex-shrink: 0;
+    }
+    .sb-appt-item {
+      padding: 8px 16px 9px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      border-left: 2px solid var(--gold-dark);
+      display: flex; gap: 8px; align-items: flex-start;
+      cursor: pointer; transition: all .15s;
+    }
+    .sb-appt-item:hover { background: rgba(200,169,110,0.06); border-left-color: var(--gold) }
+    .sb-appt-time {
+      font-family: var(--font-ui); font-size: 9px; letter-spacing: 1px;
+      color: var(--gold); font-weight: 700; flex-shrink: 0; min-width: 34px;
+      padding-top: 1px;
+    }
+    .sb-appt-info { flex: 1; min-width: 0 }
+    .sb-appt-name {
+      font-family: var(--font-display); font-size: 12px; color: var(--cream);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sb-appt-svc {
+      font-family: var(--font-ui); font-size: 6px; letter-spacing: 1.5px;
+      text-transform: uppercase; color: rgba(200,169,110,0.45); margin-top: 1px;
+    }
+    .sb-ag-empty {
+      padding: 24px 16px; text-align: center;
+      color: rgba(200,169,110,0.25); font-family: var(--font-display);
+      font-style: italic; font-size: 11px; line-height: 1.8;
+    }
+
+    /* ── FILE SYSTEM STATUS ── */
+    .fs-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: var(--font-ui); font-size: 6px; letter-spacing: 2px;
+      text-transform: uppercase; font-weight: 600; padding: 4px 9px;
+      border: 1px solid; cursor: pointer; transition: all .2s;
+      white-space: nowrap; flex-shrink: 0; background: transparent;
+    }
+    .fs-chip svg { width: 8px; height: 8px; flex-shrink: 0 }
+    .fs-chip.connected { border-color: rgba(200,169,110,0.25); color: rgba(200,169,110,0.55) }
+    .fs-chip.connected:hover { border-color: var(--gold); color: var(--gold) }
+    .fs-chip.disconnected { border-color: rgba(224,80,80,0.35); color: rgba(224,80,80,0.7) }
+    .fs-chip.disconnected:hover { background: rgba(224,80,80,0.07) }
+    .fs-chip.unsupported { border-color: rgba(200,169,110,0.12); color: rgba(200,169,110,0.28); cursor: default }
+
+    /* ── FILE SYSTEM MODAL ── */
+    .fs-modal-ov {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.92);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .3s ease;
+    }
+    .fs-modal-ov.open { opacity: 1; pointer-events: all }
+    .fs-modal-box {
+      background: var(--charcoal);
+      border: 1px solid rgba(200,169,110,0.2); border-top: 3px solid var(--gold);
+      width: min(460px, 96vw); box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    }
+    .fs-modal-hdr { padding: 18px 22px 14px; border-bottom: 1px solid rgba(200,169,110,0.1) }
+    .fs-modal-title { font-family: var(--font-display); font-size: 18px; font-weight: 300; color: var(--cream); letter-spacing: 1px }
+    .fs-modal-title em { color: var(--gold); font-style: italic }
+    .fs-modal-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 14px }
+    .fs-modal-desc { font-family: var(--font-display); font-size: 12px; font-weight: 300; color: rgba(200,169,110,0.6); line-height: 1.8; font-style: italic }
+    .fs-modal-note { font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 1.8px; text-transform: uppercase; color: rgba(200,169,110,0.35); line-height: 1.7; padding: 10px 12px; border: 1px solid rgba(200,169,110,0.1); background: rgba(200,169,110,0.03) }
+    .fs-modal-note b { color: rgba(200,169,110,0.55); font-weight: 600 }
+    .fs-modal-cur { padding: 10px 13px; border: 1px solid rgba(200,169,110,0.2); background: rgba(200,169,110,0.05); display: none }
+    .fs-modal-cur-lbl { font-family: var(--font-ui); font-size: 6px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px }
+    .fs-modal-cur-val { font-family: var(--font-display); font-size: 13px; color: var(--cream) }
+    .fs-modal-ftr { display: flex; gap: 8px; justify-content: flex-end; padding: 14px 22px; border-top: 1px solid rgba(200,169,110,0.1) }
+    .fs-connect-btn { font-family: var(--font-ui); font-size: 7px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 600; padding: 9px 18px; border: 1px solid rgba(200,169,110,0.4); color: var(--gold-light); background: transparent; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 7px }
+    .fs-connect-btn:hover { background: var(--gold-dark); color: var(--white); border-color: var(--gold-dark) }
+    .fs-connect-btn svg { width: 10px; height: 10px }
+    .fs-skip-btn { font-family: var(--font-ui); font-size: 7px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; padding: 9px 14px; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.25); background: transparent; cursor: pointer; transition: all .2s }
+    .fs-skip-btn:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.4) }
+    .fs-reconnect { padding: 14px 16px; border: 1px solid rgba(200,169,110,0.35); background: rgba(200,169,110,0.06); display: flex; flex-direction: column; gap: 6px }
+    .fs-reconnect-lbl { font-family: var(--font-ui); font-size: 6px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); opacity: .75 }
+    .fs-reconnect-name { font-family: var(--font-display); font-size: 15px; color: var(--cream); font-weight: 300 }
+    .fs-reconnect-btn { font-family: var(--font-ui); font-size: 7px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 700; padding: 10px 18px; border: none; color: #1a1400; background: var(--gold); cursor: pointer; transition: all .2s; align-self: flex-start; margin-top: 4px }
+    .fs-reconnect-btn:hover { background: var(--gold-light) }
+
+    /* ── FOLDER SETUP BANNER ── */
+    #fs-banner {
+      max-width: 210mm; margin: 0 auto 10px;
+      background: rgba(200,169,110,0.05);
+      border: 1px solid rgba(200,169,110,0.2);
+      border-left: 3px solid var(--gold-dark);
+      padding: 11px 18px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .fsb-icon { color: var(--gold-dark); flex-shrink: 0 }
+    .fsb-icon svg { width: 16px; height: 16px; display: block }
+    .fsb-text { flex: 1; min-width: 0 }
+    .fsb-title { font-family: var(--font-ui); font-size: 7px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 700; color: var(--gold); margin-bottom: 3px }
+    .fsb-sub { font-family: var(--font-display); font-size: 11px; color: rgba(200,169,110,0.55); font-style: italic; }
+    .fsb-btn { font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; padding: 7px 14px; border: 1px solid rgba(200,169,110,0.35); color: var(--gold-light); background: transparent; cursor: pointer; transition: all .2s; flex-shrink: 0; white-space: nowrap }
+    .fsb-btn:hover { background: var(--gold-dark); color: var(--white); border-color: var(--gold-dark) }
+    .fsb-close { width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: rgba(200,169,110,0.3); cursor: pointer; font-size: 16px; line-height: 1; transition: color .2s; padding: 0 }
+    .fsb-close:hover { color: rgba(200,169,110,0.7) }
+
+    /* ── PHOTO GALLERY ── */
+    .photo-sect { max-width: 210mm; margin: 0 auto 10px; background: var(--charcoal); border: 1px solid rgba(200,169,110,0.1); border-top: 2px solid rgba(200,169,110,0.2); display: none; }
+    .photo-sect.on { display: block; }
+    .photo-sect-hdr { display: flex; align-items: center; justify-content: space-between; padding: 9px 18px; border-bottom: 1px solid rgba(200,169,110,0.07); }
+    .photo-sect-title { font-family: var(--font-ui); font-size: 6.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; display: flex; align-items: center; gap: 7px; }
+    .photo-sect-title svg { width: 12px; height: 12px; }
+    .photo-add-btn { font-family: var(--font-ui); font-size: 7px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; padding: 7px 14px; border: none; color: #1a1400; background: var(--gold); cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; }
+    .photo-add-btn:hover { background: var(--gold-light) }
+    .photo-add-btn svg { width: 11px; height: 11px }
+    .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 4px; padding: 10px 18px 12px; min-height: 44px; }
+    .photo-thumb { aspect-ratio: 1; overflow: hidden; border: 1px solid rgba(200,169,110,0.12); cursor: pointer; position: relative; background: rgba(0,0,0,0.35); }
+    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .2s; }
+    .photo-thumb:hover img { opacity: 0.8; }
+    .photo-thumb-del { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.75); border: none; color: rgba(255,255,255,0.85); cursor: pointer; width: 20px; height: 20px; font-size: 13px; display: none; align-items: center; justify-content: center; }
+    .photo-thumb:hover .photo-thumb-del { display: flex; }
+    .photo-thumb-date { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.65)); padding: 12px 5px 4px; font-family: var(--font-ui); font-size: 5.5px; letter-spacing: 1px; color: rgba(200,169,110,0.75); pointer-events: none; }
+    .photo-msg { padding: 12px 18px; font-family: var(--font-display); font-size: 12px; color: rgba(200,169,110,0.3); font-style: italic; }
+    .photo-drop-zone { margin: 10px 18px 14px; border: 1px dashed rgba(200,169,110,0.25); padding: 22px 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background .2s; }
+    .photo-drop-zone:hover, .photo-drop-zone.drag-over { background: rgba(200,169,110,0.07); border-color: rgba(200,169,110,0.5); }
+    .photo-drop-zone-icon { color: rgba(200,169,110,0.3); }
+    .photo-drop-zone-icon svg { width: 28px; height: 28px; }
+    .photo-drop-zone-lbl { font-family: var(--font-ui); font-size: 7px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(200,169,110,0.4); }
+    .photo-drop-zone-sub { font-family: var(--font-display); font-size: 11px; color: rgba(200,169,110,0.25); font-style: italic; }
+    .photo-lb { position: fixed; inset: 0; z-index: 600; background: rgba(0,0,0,0.96); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; }
+    .photo-lb.open { opacity: 1; pointer-events: all }
+    .photo-lb-img { max-width: 90vw; max-height: 90vh; object-fit: contain; }
+    .photo-lb-close { position: absolute; top: 16px; right: 20px; background: transparent; border: none; color: rgba(255,255,255,0.5); font-size: 28px; cursor: pointer; line-height: 1; padding: 0; transition: color .2s; }
+    .photo-lb-close:hover { color: var(--white) }
+    .photo-lb-name { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); font-family: var(--font-ui); font-size: 6px; letter-spacing: 2px; text-transform: uppercase; color: rgba(200,169,110,0.4); white-space: nowrap; }
+    @media print { .photo-sect { display: none !important } }
+    @media (max-width: 700px) { .photo-grid { grid-template-columns: repeat(3,1fr); padding: 8px 10px 10px; } }
+  </style>
+</head>
+
+<body>
+  <div id="ov" onclick="cSB()"></div>
+  <div id="sb">
+    <div class="sbh">
+      <div class="sblogo">
+        <div class="sblm"><img src="data:image/png;base64,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" alt="AS" style="width:24px;height:24px;object-fit:contain;"></div>
+        <div>
+          <div class="sbbrand">Antonio Silvia<span>Archivio Clienti</span></div>
+        </div>
+      </div>
+      <div class="sbsw">
+        <svg class="sbsico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3" />
+        </svg>
+        <input type="text" class="sbsi" id="sbsi" placeholder="Cerca cliente&#8230;" oninput="rCL()">
+      </div>
+    </div>
+    <div class="sbact">
+      <button class="sbb pr" onclick="newClient()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14" />
+        </svg>Nuovo cliente
+      </button>
+      <button class="sbb" onclick="showStats()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+        </svg>Statistiche
+      </button>
+    </div>
+    <div class="sbst"><span id="sbc">0</span> clienti &middot; <span id="sbv">0</span> visite totali</div>
+
+    <!-- TAB BAR -->
+    <div class="sbtabs">
+      <button class="sbtab active" id="tab-clienti" onclick="switchTab('clienti')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+        Clienti
+      </button>
+      <button class="sbtab" id="tab-scadenze" onclick="switchTab('scadenze')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Scadenze
+        <span class="sbtab-badge" id="sbtab-badge"></span>
+      </button>
+      <button class="sbtab" id="tab-agenda" onclick="switchTab('agenda')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/></svg>
+        Agenda
+        <span class="sbtab-badge" id="sbtab-agenda-badge"></span>
+      </button>
+    </div>
+
+    <!-- PANEL: CLIENTI -->
+    <div class="sbpanel" id="panel-clienti">
+      <div class="sblist" id="sblist">
+        <div class="sbempty" id="sbempty">Nessun cliente archiviato.<br>Premi <em>Nuovo cliente</em> per iniziare.</div>
+      </div>
+    </div>
+
+    <!-- PANEL: AGENDA -->
+    <div class="sbpanel" id="panel-agenda" style="display:none">
+      <div class="sb-ag-btn-row">
+        <button class="sbb pr" style="width:100%;justify-content:center" onclick="openAgenda();cSB()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M12 14v4M10 16h4"/></svg>
+          Apri Agenda
+        </button>
+      </div>
+      <div class="sb-ag-today-hdr">Oggi &mdash; <span id="sb-ag-date-lbl"></span></div>
+      <div class="sblist" id="sb-ag-list"></div>
+    </div>
+
+    <!-- PANEL: SCADENZE -->
+    <div class="sbpanel" id="panel-scadenze" style="display:none">
+      <div class="sbfu-wrap" id="sbfu-wrap">
+        <div class="sbfu-empty" id="sbfu-empty">Nessun controllo in scadenza<br>nei prossimi 14 giorni.</div>
+        <div id="sbful"></div>
+      </div>
+    </div>
+    <div class="sbft">
+      <button class="sbb" onclick="bkpAll()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>Backup
+      </button>
+      <button class="sbb" onclick="document.getElementById('rf').click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 10 12 15 7 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>Ripristina
+      </button>
+      <input type="file" id="rf" accept=".json" style="display:none" onchange="restBkp(event)">
+    </div>
+  </div>
+  <div id="app">
+    <div class="tb">
+      <div class="tbl">
+        <button class="tbab" onclick="tSB()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>Archivio
+        </button>
+        <div class="tbsp"></div>
+        <div class="tbi">
+          <div class="tbt">Scheda Consulenza</div>
+          <div class="tbst" id="tbst"></div>
+        </div>
+        <span class="udot" id="udot"></span>
+        <div id="fs-status" style="margin-left:auto"></div>
+      </div>
+      <div class="tb-actions">
+        <button class="tbb sa" id="bsv" onclick="saveVisit()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>Salva visita
+        </button>
+        <div class="tbsp"></div>
+        <button class="tbb" onclick="expJSON()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="12" y1="18" x2="12" y2="12" />
+            <line x1="9" y1="15" x2="15" y2="15" />
+          </svg>Esporta
+        </button>
+        <button class="tbb" onclick="document.getElementById('imf').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="12" y1="12" x2="12" y2="18" />
+            <line x1="9" y1="15" x2="15" y2="15" />
+          </svg>Importa
+        </button>
+        <input type="file" id="imf" accept=".json" style="display:none" onchange="impJSON(event)">
+        <div class="tbsp"></div>
+        <button class="tbb" onclick="openAgenda()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+            <path d="M12 14v4M10 16h4"/>
+          </svg>Agenda
+        </button>
+        <div class="tbsp"></div>
+        <button class="tbb pr" onclick="window.print()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>PDF
+        </button>
+      </div>
+    </div>
+    <div id="fs-banner" style="display:none">
+      <div class="fsb-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          <line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/>
+        </svg>
+      </div>
+      <div class="fsb-text">
+        <div class="fsb-title" id="fsb-title">Nessuna cartella collegata</div>
+        <div class="fsb-sub" id="fsb-sub">I dati sono salvati solo nel browser. Collega una cartella Google Drive o Dropbox per salvarli su disco.</div>
+      </div>
+      <button class="fsb-btn" id="fsb-btn" onclick="openFSModal()">Connetti cartella</button>
+      <button class="fsb-close" onclick="document.getElementById('fs-banner').style.display='none'" title="Chiudi">&#215;</button>
+    </div>
+    <div class="vbar" id="vbar">
+      <span class="vbl">Visite</span>
+      <div class="vblist" id="vblist"></div>
+      <span class="vbrob" id="vbrob">&#8212; Sola lettura</span>
+      <button class="vbnew" id="vbnew" onclick="addVisit()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14" />
+        </svg>Nuova visita
+      </button>
+    </div>
+    <div class="stp" id="stp">
+      <div class="stg" id="stg"></div>
+      <div class="str" id="str"></div>
+      <button class="stcb" onclick="hStats()">Chiudi statistiche</button>
+    </div>
+    <div class="rban" id="rban">Visita precedente &#8212; sola lettura</div>
+    <div class="photo-sect" id="photo-sect">
+      <div class="photo-sect-hdr">
+        <span class="photo-sect-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Galleria Fotografica
+        </span>
+        <button class="photo-add-btn" onclick="triggerPhotoUpload()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Aggiungi foto
+        </button>
+        <input type="file" id="photo-file-input" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(event)">
+      </div>
+      <div id="photo-grid" class="photo-grid"></div>
+    </div>
+    <form id="sf" onsubmit="event.preventDefault()">
+      <div class="page" id="pg">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="header">
+          <div class="logo-block">
+            <div class="logo-mark"><img src="data:image/png;base64,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" alt="AS" style="width:26px;height:26px;object-fit:contain;"></div>
+            <div class="logo-text"><span class="brand">Antonio Silvia</span><span class="tag">Tecnico Tricologo</span>
+            </div>
+          </div>
+          <div class="header-right">
+            <span class="studio-label">Studio Tricologico</span>
+            <div class="ref-row">N&deg; <input type="text" class="ref-input" name="ref" placeholder="______ / 2026">
+            </div>
+          </div>
+        </div>
+        <div class="title-block">
+          <div class="eyebrow">Confidential &middot; Client File</div>
+          <h1>Scheda Cliente <em>&#8212;</em> Consulenza Trico-Cosmetica</h1>
+          <div class="ornament"><span class="line"></span><span class="diamond"></span><span class="line"></span></div>
+        </div>
+        <div class="section">
+          <div class="section-head"><span class="section-num">01</span>
+            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+            </svg>
+            <span class="section-title">Dati Cliente</span><span class="section-deco">&#8212; informazioni
+              personali</span>
+          </div>
+          <div class="section-body">
+            <div class="field-grid">
+              <div class="field"><span class="field-label">Nome e Cognome</span><input type="text" class="f-input"
+                  name="nome_cognome" autocomplete="off"></div>
+              <div class="field"><span class="field-label">Data di Nascita</span><input type="date" class="f-input"
+                  name="data_nascita"></div>
+              <div class="field"><span class="field-label">Telefono</span><input type="tel" class="f-input"
+                  name="telefono" autocomplete="off"></div>
+              <div class="field"><span class="field-label">Email</span><input type="email" class="f-input" name="email"
+                  autocomplete="off"></div>
+            </div>
+            <hr class="row-sep">
+            <div class="field-grid" style="max-width:60%">
+              <div class="field"><span class="field-label">Data Consulenza</span><input type="date" class="f-input"
+                  name="data_consulenza"></div>
+              <div class="field"><span class="field-label">Sesso</span>
+                <div class="radio-group" style="margin-top:2px;flex-wrap:nowrap">
+                  <div class="radio-pill"><input type="radio" name="sesso" id="s_m" value="M"><label for="s_m">M</label>
+                  </div>
+                  <div class="radio-pill"><input type="radio" name="sesso" id="s_f" value="F"><label for="s_f">F</label>
+                  </div>
+                  <div class="radio-pill"><input type="radio" name="sesso" id="s_a" value="Altro"><label
+                      for="s_a">Altro</label></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-head"><span class="section-num">02</span>
+            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 21s-7-4.5-7-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6.5-7 11-7 11" />
+              <path d="M3 12h4l2-3 3 6 2-4h6" />
+            </svg>
+            <span class="section-title">Anamnesi Tricologica</span><span class="section-deco">&#8212; storia clinica
+              &middot; &#9675; lieve &nbsp;&#9675;&#9675; moderato &nbsp;&#9675;&#9675;&#9675; severo</span>
+          </div>
+          <div class="section-body">
+            <span class="sub-label">Problematiche riscontrate</span>
+            <div class="check-grid" id="ag"></div>
+            <hr class="row-sep">
+            <span class="sub-label">Fattori sistemici e ormonali</span>
+            <div class="check-grid" id="ag2"></div>
+            <hr class="row-sep">
+            <div class="field-grid-3" style="row-gap:5px">
+              <div class="field"><span class="field-label">Da quanto tempo</span>
+                <div class="radio-group" style="margin-top:3px;flex-wrap:nowrap">
+                  <div class="radio-pill"><input type="radio" name="durata" id="d1" value="&lt; 3 mesi"><label
+                      for="d1">&lt;3 mesi</label></div>
+                  <div class="radio-pill"><input type="radio" name="durata" id="d2" value="3-12 mesi"><label
+                      for="d2">3&#8211;12 mesi</label></div>
+                  <div class="radio-pill"><input type="radio" name="durata" id="d3" value="&gt; 1 anno"><label
+                      for="d3">&gt;1 anno</label></div>
+                  <div class="radio-pill"><input type="radio" name="durata" id="d4" value="Cronico"><label
+                      for="d4">Cronico</label></div>
+                </div>
+              </div>
+              <div class="field"><span class="field-label">Frequenza lavaggio</span>
+                <div class="radio-group" style="margin-top:3px">
+                  <div class="radio-pill"><input type="radio" name="freq_lavaggio" id="fl1" value="Quotidiano"><label
+                      for="fl1">Quotidiano</label></div>
+                  <div class="radio-pill"><input type="radio" name="freq_lavaggio" id="fl2"
+                      value="A giorni alterni"><label for="fl2">A gg alterni</label></div>
+                  <div class="radio-pill"><input type="radio" name="freq_lavaggio" id="fl3" value="2-3/sett"><label
+                      for="fl3">2&#8211;3/sett</label></div>
+                  <div class="radio-pill"><input type="radio" name="freq_lavaggio" id="fl4" value="1/sett"><label
+                      for="fl4">1/sett</label></div>
+                </div>
+              </div>
+              <div class="field"><span class="field-label">Trattamenti chimici recenti</span>
+                <div class="radio-group" style="margin-top:3px">
+                  <div class="radio-pill"><input type="radio" name="tratt_chimici" id="tc0" value="Nessuno"><label
+                      for="tc0">Nessuno</label></div>
+                  <div class="radio-pill"><input type="radio" name="tratt_chimici" id="tc1" value="Colorazione"><label
+                      for="tc1">Colorazione</label></div>
+                  <div class="radio-pill"><input type="radio" name="tratt_chimici" id="tc2" value="Decolorazione"><label
+                      for="tc2">Decolorazione</label></div>
+                  <div class="radio-pill"><input type="radio" name="tratt_chimici" id="tc3" value="Permanente"><label
+                      for="tc3">Permanente</label></div>
+                  <div class="radio-pill"><input type="radio" name="tratt_chimici" id="tc4" value="Lisciante"><label
+                      for="tc4">Lisciante</label></div>
+                </div>
+              </div>
+            </div>
+            <hr class="row-sep">
+            <div class="field-grid">
+              <div class="field"><span class="field-label">Prodotti attualmente in uso</span><input type="text"
+                  class="f-input" name="prodotti_uso" placeholder="es. shampoo al tea tree, lozione anticaduta&#8230;">
+              </div>
+              <div class="field"><span class="field-label">Farmaci / Integratori in corso</span><input type="text"
+                  class="f-input" name="farmaci_integratori" placeholder="es. minoxidil, biotina, levotiroxina&#8230;">
+              </div>
+            </div>
+            <div class="notes-block">
+              <div class="notes-label">Note anamnestiche aggiuntive</div>
+              <textarea class="note-area md" name="note_anamnesi"
+                placeholder="Ulteriori dettagli clinici, episodi pregressi, terapie passate&#8230;"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-head"><span class="section-num">03</span>
+            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+              <path d="M8 11h6M11 8v6" />
+            </svg>
+            <span class="section-title">Analisi del Cuoio Capelluto &amp; Fusto</span><span class="section-deco">&#8212;
+              scalp &amp; hair shaft analysis</span>
+          </div>
+          <div class="section-body">
+            <span class="sub-label">Parametri cuoio capelluto</span>
+            <div class="analysis-grid" id="ang"></div>
+            <hr class="row-sep">
+            <span class="sub-label">Caratteristiche del capello</span>
+            <div class="field-grid-3" style="row-gap:6px">
+              <div class="field"><span class="field-label">Tipo di capello</span>
+                <div class="radio-group" style="margin-top:3px">
+                  <div class="radio-pill"><input type="radio" name="tipo_capello" id="tc_l" value="Liscio"><label
+                      for="tc_l">Liscio</label></div>
+                  <div class="radio-pill"><input type="radio" name="tipo_capello" id="tc_m" value="Mosso"><label
+                      for="tc_m">Mosso</label></div>
+                  <div class="radio-pill"><input type="radio" name="tipo_capello" id="tc_r" value="Riccio"><label
+                      for="tc_r">Riccio</label></div>
+                  <div class="radio-pill"><input type="radio" name="tipo_capello" id="tc_c" value="Crespo"><label
+                      for="tc_c">Crespo</label></div>
+                </div>
+              </div>
+              <div class="field"><span class="field-label">Lunghezza</span>
+                <div class="radio-group" style="margin-top:3px">
+                  <div class="radio-pill"><input type="radio" name="lunghezza" id="lu_c" value="Corto"><label
+                      for="lu_c">Corto (&lt;10cm)</label></div>
+                  <div class="radio-pill"><input type="radio" name="lunghezza" id="lu_m" value="Medio"><label
+                      for="lu_m">Medio</label></div>
+                  <div class="radio-pill"><input type="radio" name="lunghezza" id="lu_l" value="Lungo"><label
+                      for="lu_l">Lungo (&gt;25cm)</label></div>
+                </div>
+              </div>
+              <div class="field"><span class="field-label">Colorazione attuale</span>
+                <div class="radio-group" style="margin-top:3px">
+                  <div class="radio-pill"><input type="radio" name="colorazione" id="co_n" value="Naturale"><label
+                      for="co_n">Naturale</label></div>
+                  <div class="radio-pill"><input type="radio" name="colorazione" id="co_c" value="Colorato"><label
+                      for="co_c">Colorato</label></div>
+                  <div class="radio-pill"><input type="radio" name="colorazione" id="co_d" value="Decolorato"><label
+                      for="co_d">Decolorato</label></div>
+                  <div class="radio-pill"><input type="radio" name="colorazione" id="co_m" value="Misto"><label
+                      for="co_m">Misto</label></div>
+                </div>
+              </div>
+              <div class="field"><span class="field-label">Elasticit&agrave; del fusto</span>
+                <div class="radio-group" style="margin-top:3px">
+                  <div class="radio-pill"><input type="radio" name="elasticita" id="el_b" value="Buona"><label
+                      for="el_b">Buona</label></div>
+                  <div class="radio-pill"><input type="radio" name="elasticita" id="el_r" value="Ridotta"><label
+                      for="el_r">Ridotta</label></div>
+                  <div class="radio-pill"><input type="radio" name="elasticita" id="el_s" value="Scarsa"><label
+                      for="el_s">Scarsa</label></div>
+                </div>
+              </div>
+              <div class="field"><span class="field-label">Vascolarizzazione cuoio capelluto</span>
+                <div class="radio-group" style="margin-top:3px">
+                  <div class="radio-pill"><input type="radio" name="vascolarizzazione" id="va_n" value="Normale"><label
+                      for="va_n">Normale</label></div>
+                  <div class="radio-pill"><input type="radio" name="vascolarizzazione" id="va_r" value="Ridotta"><label
+                      for="va_r">Ridotta</label></div>
+                  <div class="radio-pill"><input type="radio" name="vascolarizzazione" id="va_a"
+                      value="Aumentata"><label for="va_a">Aumentata</label></div>
+                </div>
+              </div>
+              <div class="field"><span class="field-label">Colore naturale capello</span><input type="text"
+                  class="f-input" name="colore_naturale" placeholder="es. castano scuro, biondo cenere&#8230;"></div>
+            </div>
+            <div class="notes-block">
+              <div class="notes-label">Zone interessate &amp; note analisi</div>
+              <textarea class="note-area sm" name="zone_note"
+                placeholder="Es. diradamento bitemporale con miniaturizzazione in zona frontale&#8230;"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="footer" id="footer-p1" style="display:none">
+          <div>Studio Tricologico &middot; Consulenza Cosmetica</div>
+          <div class="gold">&#8212; Confidential &#8212;</div>
+          <div>Scheda n&deg; <span class="ref-mirror">&#8212;</span> &middot; Pag. 01 / 02</div>
+        </div>
+        <div class="print-break" style="margin:0;padding:0"></div>
+        <div class="section">
+          <div class="section-head"><span class="section-num">04</span>
+            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <circle cx="12" cy="12" r="5" />
+              <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+            </svg>
+            <span class="section-title">Obiettivo del Cliente</span><span class="section-deco">&#8212; esigenze &amp;
+              aspettative</span>
+          </div>
+          <div class="section-body"><textarea class="note-area lg" name="obiettivo"
+              placeholder="Motivazione della consulenza, risultati attesi, priorit&agrave; del cliente&#8230;"></textarea>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-head"><span class="section-num">05</span>
+            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 3h10l4 4v14H5z" />
+              <path d="M15 3v4h4" />
+              <path d="M9 12h6M9 16h6M9 8h3" />
+            </svg>
+            <span class="section-title">Piano Consigliato</span><span class="section-deco">&#8212; protocollo
+              personalizzato</span>
+          </div>
+          <div class="section-body">
+            <div class="plan-grid">
+              <div class="plan-item">
+                <div class="plan-label">&#8212; Routine Domiciliare</div><textarea class="note-area sm" name="routine"
+                  placeholder="es. shampoo delicato 3&times;/sett&#8230;"></textarea>
+              </div>
+              <div class="plan-item">
+                <div class="plan-label">&#8212; Trattamenti in Studio</div><textarea class="note-area sm"
+                  name="trattamenti" placeholder="es. mesoterapia, laser biostimolante&#8230;"></textarea>
+              </div>
+              <div class="plan-item">
+                <div class="plan-label">&#8212; Prodotti Consigliati</div><textarea class="note-area sm" name="prodotti"
+                  placeholder="es. shampoo + fiale + integratore&#8230;"></textarea>
+              </div>
+              <div class="plan-item">
+                <div class="plan-label">&#8212; Frequenza &amp; Durata Protocollo</div><textarea class="note-area sm"
+                  name="frequenza" placeholder="es. 1 seduta/2 settimane per 3 mesi&#8230;"></textarea>
+              </div>
+            </div>
+            <hr class="row-sep">
+            <div class="followup-strip">
+              <div class="field"><span class="field-label">Prossimo controllo</span><input type="date" class="f-input"
+                  name="prossimo_controllo"></div>
+              <div class="field" style="flex:2"><span class="field-label">Obiettivo a breve termine (30&#8211;60
+                  gg)</span><input type="text" class="f-input" name="obiettivo_breve"
+                  placeholder="es. riduzione caduta del 40%&#8230;"></div>
+              <div class="field" style="flex:1"><span class="field-label">Fotodocumentazione</span><input type="text"
+                  class="f-input" name="foto_rif" placeholder="ID foto / cartella&#8230;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-head"><span class="section-num">06</span>
+            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h12l4 4v12H4z" />
+              <path d="M8 9h8M8 13h8M8 17h5" />
+            </svg>
+            <span class="section-title">Note Tecniche</span><span class="section-deco">&#8212; osservazioni del
+              tricologo</span>
+          </div>
+          <div class="section-body"><textarea class="note-area" style="min-height:268px;height:268px"
+              name="note_tecniche"
+              placeholder="Osservazioni cliniche, parametri rilevati al tricotest/trichoscan, diagnosi presuntiva&#8230;"></textarea>
+          </div>
+        </div>
+        <div class="signatures">
+          <div class="sign-block"><input type="text" class="sign-input" name="firma_cliente"
+              placeholder="Nome e Cognome">
+            <div class="sign-label">Firma Cliente</div>
+            <div class="sign-deco">&#8212; per accettazione trattamento</div>
+          </div>
+          <div class="sign-block"><input type="text" class="sign-input" name="firma_tecnico" value="Antonio Silvia">
+            <div class="sign-label">Firma Tecnico Tricologo</div>
+            <div class="sign-deco">&#8212; Antonio Silvia</div>
+          </div>
+        </div>
+        <div class="gdpr-row">
+          <label class="gdpr-item"><input type="checkbox" name="gdpr_privacy">
+            <span>Il/La sottoscritto/a dichiara di aver ricevuto e letto l&#8217;informativa sulla privacy ai sensi del
+              Regolamento UE 2016/679 (GDPR) e <strong>presta il consenso</strong> al trattamento dei propri dati
+              personali e sanitari per finalit&agrave; di consulenza tricologica.</span>
+          </label>
+          <label class="gdpr-item"><input type="checkbox" name="gdpr_marketing">
+            <span><em>Opzionale</em> &#8212; Acconsente al trattamento dei dati per finalit&agrave; di marketing e
+              aggiornamenti sui servizi dello Studio.</span>
+          </label>
+        </div>
+        <div class="footer">
+          <div>Studio Tricologico &middot; Consulenza Cosmetica</div>
+          <div class="gold">&#8212; Confidential &#8212;</div>
+          <div>Scheda n&deg; <span id="footer-ref">&#8212;</span> &middot; Pag. 02 / 02</div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <!-- ═══════════════ AGENDA OVERLAY ═══════════════ -->
+  <div class="agenda-ov" id="agenda-ov">
+    <div class="agenda-wrap">
+      <div class="agenda-hdr">
+        <div class="agenda-hdr-title">Agenda <em>&#8212; prenotazioni</em></div>
+        <div class="agenda-nav">
+          <button class="agenda-nav-btn" onclick="agendaPrevMonth()">&#8249;</button>
+          <span class="agenda-nav-lbl" id="agenda-month-lbl"></span>
+          <button class="agenda-nav-btn" onclick="agendaNextMonth()">&#8250;</button>
+        </div>
+        <button class="agenda-close" onclick="closeAgenda()">&#10005;</button>
+      </div>
+      <div class="agenda-body">
+        <!-- Calendar column -->
+        <div class="agenda-cal-wrap">
+          <div class="agenda-cal-dow">
+            <span>Lun</span><span>Mar</span><span>Mer</span>
+            <span>Gio</span><span>Ven</span><span>Sab</span><span>Dom</span>
+          </div>
+          <div class="agenda-cal-days" id="agenda-cal-days"></div>
+        </div>
+        <!-- Day detail panel -->
+        <div class="agenda-day-panel">
+          <div class="agenda-day-hdr">
+            <span class="agenda-day-lbl" id="agenda-day-lbl">Seleziona un giorno</span>
+            <button class="agenda-new-btn" onclick="openNewAppt()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              Nuova prenotazione
+            </button>
+          </div>
+          <div class="agenda-appts" id="agenda-appts">
+            <div class="agenda-empty-day">Seleziona un giorno<br>per visualizzare gli appuntamenti.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ APPOINTMENT MODAL ═══════════════ -->
+  <div class="appt-modal-ov" id="appt-modal-ov">
+    <div class="appt-modal-box">
+      <div class="appt-modal-hdr">
+        <span class="appt-modal-hdr-title" id="appt-modal-title">Nuova Prenotazione</span>
+        <button class="appt-modal-close" onclick="closeApptModal()">&#10005;</button>
+      </div>
+      <div class="appt-modal-body">
+        <div class="appt-field">
+          <label>Cliente</label>
+          <input type="text" id="appt-client" list="appt-client-list" placeholder="Nome cliente&#8230;" autocomplete="off">
+          <datalist id="appt-client-list"></datalist>
+        </div>
+        <div class="appt-field-row">
+          <div class="appt-field">
+            <label>Data</label>
+            <input type="date" id="appt-date">
+          </div>
+          <div class="appt-field">
+            <label>Ora</label>
+            <input type="time" id="appt-time" value="09:00">
+          </div>
+          <div class="appt-field">
+            <label>Durata</label>
+            <select id="appt-duration">
+              <option value="30">30 min</option>
+              <option value="45">45 min</option>
+              <option value="60" selected>60 min</option>
+              <option value="90">90 min</option>
+              <option value="120">120 min</option>
+            </select>
+          </div>
+        </div>
+        <div class="appt-field">
+          <label>Servizio</label>
+          <select id="appt-service">
+            <option value="Consulenza Tricologica">Consulenza Tricologica</option>
+            <option value="Trattamento in Studio">Trattamento in Studio</option>
+            <option value="Controllo di Ritorno">Controllo di Ritorno</option>
+            <option value="Mesoterapia">Mesoterapia</option>
+            <option value="Laser Biostimolante">Laser Biostimolante</option>
+            <option value="Altro">Altro</option>
+          </select>
+        </div>
+        <div class="appt-field">
+          <label>Note</label>
+          <textarea id="appt-notes" placeholder="Note aggiuntive&#8230;"></textarea>
+        </div>
+      </div>
+      <div class="appt-modal-ftr">
+        <button class="appt-btn appt-btn-del" id="appt-del-btn" style="display:none" onclick="deleteCurrentAppt()">Elimina</button>
+        <button class="appt-btn appt-btn-cancel" onclick="closeApptModal()">Annulla</button>
+        <button class="appt-btn appt-btn-save" onclick="saveAppt()">Salva</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="photo-lb" id="photo-lb">
+    <img class="photo-lb-img" id="photo-lb-img" src="" alt="">
+    <button class="photo-lb-close" onclick="closePhotoLb()">&#215;</button>
+    <div class="photo-lb-name" id="photo-lb-name"></div>
+  </div>
+
+  <!-- FILE SYSTEM MODAL -->
+  <div class="fs-modal-ov" id="fs-modal-ov">
+    <div class="fs-modal-box">
+      <div class="fs-modal-hdr">
+        <div class="fs-modal-title">Cartella Dati <em>&#8212; archiviazione su file</em></div>
+      </div>
+      <div class="fs-modal-body">
+        <div class="fs-modal-desc">Seleziona una cartella sul tuo dispositivo dove salvare archivio, prenotazioni e lavoro in corso. I file vengono scritti direttamente sul disco — nessun dato nel browser.</div>
+        <div id="fs-reconnect" style="display:none" class="fs-reconnect">
+          <div class="fs-reconnect-lbl">Ultima cartella collegata</div>
+          <div class="fs-reconnect-name" id="fs-reconnect-name">—</div>
+          <button class="fs-reconnect-btn" onclick="reconnectFolder()">&#8635;&ensp;Riconnetti</button>
+        </div>
+        <div class="fs-modal-note"><b>Google Drive / Dropbox:</b> apri il selettore &rarr; naviga nella cartella sincronizzata di Google Drive o Dropbox sul tuo computer &rarr; clicca &ldquo;Seleziona&rdquo;. I dati verranno sincronizzati automaticamente.<br><br>Su Brave: disabilita Shields (leone &#129466; in alto a destra) e ricarica.</div>
+        <div class="fs-modal-cur" id="fs-modal-cur">
+          <div class="fs-modal-cur-lbl">Cartella connessa</div>
+          <div class="fs-modal-cur-val" id="fs-modal-cur-val"></div>
+        </div>
+      </div>
+      <div class="fs-modal-ftr">
+        <button class="fs-skip-btn" onclick="closeFSModal()">Annulla</button>
+        <button class="fs-connect-btn" onclick="connectFolder()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
+          Seleziona cartella
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SK = 'trico_v3', AK = 'trico_as_v3';
+    const A1 = ['Caduta capelli', 'Diradamento diffuso', 'Cute grassa (seborrea)', 'Cute secca', 'Forfora (pitiriasi)', 'Sensibilit\u00e0 / Prurito', 'Dermatite seborroica', 'Psoriasi cuoio capelluto', 'Fragilit\u00e0 capello', 'Doppie punte / rottura', 'Capelli senza volume', 'Alopecia areata'];
+    const A2 = ['Patologia tiroidea', 'Anemia / carenza ferro', 'Diabete', 'Terapia ormonale', 'Gravidanza / allattamento', 'Post-partum', 'Menopausa / andropausa', 'Stress cronico / burnout', 'Intervento chirurgico recente', 'Perdita di peso rapida', 'Alimentazione carente'];
+    const AP = [{ n: 'stato_cute', l: 'Stato cute', a: 'Ottimo', b: 'Critico' }, { n: 'densita', l: 'Densit\u00e0', a: 'Alta', b: 'Bassa' }, { n: 'spessore', l: 'Spessore fusto', a: 'Spesso', b: 'Sottile' }, { n: 'sebo', l: 'Sebo', a: 'Scarso', b: 'Eccessivo' }, { n: 'desquamazione', l: 'Desquamazione', a: 'Assente', b: 'Severa' }, { n: 'miniaturizzazione', l: 'Miniaturizzazione', a: 'Assente', b: 'Marcata' }, { n: 'infiammazione', l: 'Infiammazione cute', a: 'Assente', b: 'Severa' }, { n: 'idratazione', l: 'Idratazione', a: 'Ottima', b: 'Scarsa' }, { n: 'ph_cute', l: 'pH cute', a: 'Acido', b: 'Alcalino' }];
+    let cid = null, vid = null, ro = false, dirty = false;
+    let _arch = {}, _ag = {}, _dh = null, _fsOk = false;
+    let _deletedClients = new Set();
+    function gA() { return _arch; }
+    // Merge current in-memory state with latest on-disk version, then write.
+    // Prevents one device overwriting another device's new entries.
+    async function _mergeSave() {
+      if(!_dh) return;
+      try {
+        const onDisk = await _fsRead('archivio.json', null);
+        if(onDisk && typeof onDisk === 'object') {
+          const merged = {...onDisk};
+          for(const [k,v] of Object.entries(_arch)) merged[k] = v;
+          for(const id of _deletedClients) delete merged[id];
+          if(Object.keys(merged).length !== Object.keys(_arch).length) {
+            _arch = merged; rCL(); rFU();
+          }
+        }
+      } catch {}
+      _fsWrite('archivio.json', _arch);
+    }
+    function sA(a) { _arch = a; if(_dh) _mergeSave(); else localStorage.setItem(SK, JSON.stringify(a)); }
+    function _saDirect(a) { _arch = a; _deletedClients = new Set(); if(_dh) _fsWrite('archivio.json',a); else localStorage.setItem(SK,JSON.stringify(a)); }
+    function gid() { return '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6); }
+    function bG(items, id, pfx) {
+      const g = document.getElementById(id);
+      items.forEach((item, i) => {
+        const k = pfx + '_' + i, l = document.createElement('label');
+        l.className = 'check-item';
+        l.innerHTML = '<input type="checkbox" name="' + k + '_check"><span class="label-text">' + item + '</span><span class="check-intensity" data-key="' + k + '_int"><button type="button" class="dot-i" data-lv="1"></button><button type="button" class="dot-i" data-lv="2"></button><button type="button" class="dot-i" data-lv="3"></button></span>';
+        g.appendChild(l);
+      });
+      document.querySelectorAll('#' + id + ' .check-intensity').forEach(grp => {
+        grp.querySelectorAll('.dot-i').forEach(dot => {
+          dot.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); const lv = parseInt(dot.dataset.lv), cur = grp.querySelectorAll('.dot-i.active').length; grp.querySelectorAll('.dot-i').forEach((d, i) => d.classList.toggle('active', cur !== lv && i < lv)); mU(); });
+        });
+      });
+    }
+    function bA() {
+      const g = document.getElementById('ang');
+      AP.forEach(p => { const d = document.createElement('div'); d.className = 'param'; d.innerHTML = '<span class="param-label">' + p.l + '</span><div class="scale"><span class="scale-label">' + p.a + '</span><div class="scale-bar" data-name="' + p.n + '">' + [1, 2, 3, 4, 5].map(n => '<button type="button" class="scale-cell" data-lv="' + n + '"></button>').join('') + '</div><span class="scale-label">' + p.b + '</span></div>'; g.appendChild(d); });
+      document.querySelectorAll('.scale-bar').forEach(bar => { bar.querySelectorAll('.scale-cell').forEach(cell => { cell.addEventListener('click', e => { e.preventDefault(); const lv = parseInt(cell.dataset.lv), cur = bar.querySelectorAll('.scale-cell.active').length; bar.querySelectorAll('.scale-cell').forEach((c, i) => c.classList.toggle('active', cur !== lv && i < lv)); mU(); }); }); });
+    }
+    document.querySelector('[name="ref"]').addEventListener('input', function () { const v = this.value || '\u2014'; document.getElementById('footer-ref').textContent = v; document.querySelectorAll('.ref-mirror').forEach(el => el.textContent = v); });
+    function cD() { const d = { fields: {}, radios: {}, checks: {}, intensities: {}, scales: {} }; document.querySelectorAll('#sf input[type="text"],#sf input[type="email"],#sf input[type="tel"],#sf input[type="date"],#sf textarea').forEach(el => { if (el.name) d.fields[el.name] = el.value; }); document.querySelectorAll('#sf input[type="radio"]:checked').forEach(el => { d.radios[el.name] = el.value; }); document.querySelectorAll('#sf input[type="checkbox"]').forEach(el => { if (el.name) d.checks[el.name] = el.checked; }); document.querySelectorAll('.check-intensity').forEach(grp => { d.intensities[grp.dataset.key] = grp.querySelectorAll('.dot-i.active').length; }); document.querySelectorAll('.scale-bar').forEach(bar => { d.scales[bar.dataset.name] = bar.querySelectorAll('.scale-cell.active').length; }); return d; }
+    function aD(d) { if (!d) return; Object.entries(d.fields || {}).forEach(([k, v]) => { const el = document.querySelector('#sf [name="' + k + '"]'); if (el) { el.value = v; el.dispatchEvent(new Event('input')); } }); Object.entries(d.radios || {}).forEach(([k, v]) => { const el = document.querySelector('#sf input[type="radio"][name="' + k + '"][value="' + v + '"]'); if (el) el.checked = true; }); Object.entries(d.checks || {}).forEach(([k, v]) => { const el = document.querySelector('#sf [name="' + k + '"]'); if (el) el.checked = v; }); Object.entries(d.intensities || {}).forEach(([k, lv]) => { const grp = document.querySelector('.check-intensity[data-key="' + k + '"]'); if (grp) grp.querySelectorAll('.dot-i').forEach((d, i) => d.classList.toggle('active', i < lv)); }); Object.entries(d.scales || {}).forEach(([k, lv]) => { const bar = document.querySelector('.scale-bar[data-name="' + k + '"]'); if (bar) bar.querySelectorAll('.scale-cell').forEach((c, i) => c.classList.toggle('active', i < lv)); }); }
+    function clF() { document.querySelectorAll('#sf input[type="text"],#sf input[type="email"],#sf input[type="tel"],#sf input[type="date"],#sf textarea').forEach(el => { if (el.name !== 'firma_tecnico') el.value = ''; }); document.querySelectorAll('#sf input[type="radio"],#sf input[type="checkbox"]').forEach(el => el.checked = false); document.querySelectorAll('.dot-i.active,.scale-cell.active').forEach(el => el.classList.remove('active')); document.getElementById('footer-ref').textContent = '\u2014'; }
+    function mU() { if (ro) return; dirty = true; document.getElementById('udot').classList.add('on'); sAs(); }
+    function mS() { dirty = false; document.getElementById('udot').classList.remove('on'); clearTimeout(_t); }
+    let _t; function sAs() { clearTimeout(_t); _t = setTimeout(() => { const s={cid,vid,data:cD()}; if(_dh) _fsWrite('autosave.json',s); else localStorage.setItem(AK,JSON.stringify(s)); }, 900); }
+    document.getElementById('sf').addEventListener('input', () => { if (!ro) mU(); });
+    document.getElementById('sf').addEventListener('change', () => { if (!ro) mU(); });
+    function sRO(v) { ro = v; document.getElementById('pg').classList.toggle('rom', v); document.getElementById('rban').classList.toggle('on', v); document.getElementById('vbrob').classList.toggle('on', v); document.getElementById('bsv').style.display = v ? 'none' : ''; }
+    function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+    function tSB() { const sb = document.getElementById('sb'); sb.classList.contains('open') ? cSB() : (sb.classList.add('open'), document.getElementById('ov').classList.add('on'), rCL()); }
+    function cSB() { document.getElementById('sb').classList.remove('open'); document.getElementById('ov').classList.remove('on'); }
+    function cN(c) { return c.profile && c.profile.nome_cognome || '\u2014 Cliente senza nome \u2014'; }
+    function lVD(c) { const v = c.visits || []; return v.length ? v[v.length - 1].date || '' : (c.savedAt || '').split('T')[0]; }
+    function lVF(c) { const v = c.visits || []; return v.length ? ((v[v.length - 1].data || {}).fields || {}).prossimo_controllo || '' : (c.data && c.data.fields && c.data.fields.prossimo_controllo) || ''; }
+    function rCL() {
+      const arch = gA(), q = (document.getElementById('sbsi').value || '').toLowerCase();
+      const list = document.getElementById('sblist'), empty = document.getElementById('sbempty');
+      list.querySelectorAll('.ci').forEach(el => el.remove());
+      const entries = Object.entries(arch).sort((a, b) => lVD(b[1]).localeCompare(lVD(a[1])));
+      const filtered = q ? entries.filter(([id, c]) => cN(c).toLowerCase().includes(q)) : entries;
+      let tv = 0; Object.values(arch).forEach(c => tv += (c.visits || []).length);
+      document.getElementById('sbc').textContent = entries.length;
+      document.getElementById('sbv').textContent = tv;
+      rFU(arch);
+      if (filtered.length === 0) { empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      filtered.forEach(([id, client]) => {
+        const item = document.createElement('div'); item.className = 'ci' + (id === cid ? ' active' : '');
+        const vc = (client.visits || []).length, ld = lVD(client);
+        item.innerHTML = '<div class="cin">' + cN(client) + '</div><div class="cim"><span class="civc">' + vc + ' visita' + (vc !== 1 ? 'e' : '') + '</span><span class="cild">' + ld + '</span><button class="cidel" onclick="delC(\'' + id + '\',event)" data-cid="' + id + '" title="Elimina"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></div>';
+        item.addEventListener('click', () => oC(id));
+        list.appendChild(item);
+      });
+    }
+    function rFU(arch) { if(arch===undefined) arch=gA();
+      const flist = document.getElementById('sbful');
+      const empty = document.getElementById('sbfu-empty');
+      const badge = document.getElementById('sbtab-badge');
+      flist.innerHTML = '';
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const lim = new Date(today); lim.setDate(lim.getDate() + 14);
+      const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+      const due = [];
+      Object.entries(arch).forEach(([id, client]) => {
+        const fu = lVF(client); if (!fu) return;
+        const d = new Date(fu);
+        if (d >= today && d <= lim) due.push({ id, name: cN(client), date: fu, d });
+      });
+      due.sort((a, b) => a.d - b.d);
+      if (!due.length) {
+        empty.style.display = 'block';
+        badge.classList.remove('visible');
+        return;
+      }
+      empty.style.display = 'none';
+      badge.textContent = due.length;
+      badge.classList.add('visible');
+      due.forEach(({ id, name, date, d }) => {
+        const el = document.createElement('div'); el.className = 'sbfui';
+        const isToday = d.getTime() === today.getTime();
+        const isUrgent = d < tomorrow;
+        const dateClass = isToday ? 'today' : isUrgent ? 'urgent' : '';
+        const dateLabel = isToday ? 'Oggi' : date;
+        el.innerHTML = '<div class="sbfin">' + name + '</div><div class="sbfid ' + dateClass + '">Controllo: ' + dateLabel + '</div>';
+        el.onclick = () => { oC(id); switchTab('clienti'); };
+        flist.appendChild(el);
+      });
+    }
+    function oC(id) {
+      if (dirty && !confirm('Modifiche non salvate. Continuare?')) return;
+      const arch = gA(), client = arch[id]; if (!client) return;
+      cid = id; const visits = client.visits || [];
+      if (visits.length > 0) { const last = visits[visits.length - 1]; vid = last.id; clF(); aD(last.data); sRO(false); }
+      else { vid = null; clF(); sRO(false); }
+      mS(); uTB(client); rVB(client); cSB(); toast('Caricato: ' + cN(client)); window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.getElementById('photo-sect').classList.add('on');
+      renderPhotos(id);
+      if(_dh) _writeScheda(id);
+    }
+    function rVB(client) {
+      const bar = document.getElementById('vbar'), list = document.getElementById('vblist');
+      list.innerHTML = ''; const visits = client.visits || [];
+      if (!visits.length) { bar.classList.remove('on'); return; }
+      bar.classList.add('on');
+      visits.forEach((v, i) => {
+        const chip = document.createElement('button'); chip.type = 'button'; chip.className = 'vbc' + (v.id === vid ? ' active' : '');
+        chip.textContent = v.date || ('Visita ' + (i + 1));
+        chip.onclick = () => oV(client, v.id);
+        list.appendChild(chip);
+      });
+    }
+    function oV(client, visitId) {
+      if (dirty && !confirm('Modifiche non salvate. Continuare?')) return;
+      const visits = client.visits || [], visit = visits.find(v => v.id === visitId); if (!visit) return;
+      const isLast = visits[visits.length - 1].id === visitId;
+      vid = visitId; clF(); aD(visit.data); sRO(!isLast); mS();
+      document.querySelectorAll('.vbc').forEach((c, i) => c.classList.toggle('active', visits[i] && visits[i].id === visitId));
+    }
+    function addVisit() {
+      if (!cid) { toast('Seleziona prima un cliente'); return; }
+      if (dirty && !confirm('Modifiche non salvate. Continuare?')) return;
+      const arch = gA(), client = arch[cid]; if (!client) return;
+      const last = (client.visits || []).slice(-1)[0];
+      const pf = { fields: {}, radios: {}, checks: {}, intensities: {}, scales: {} };
+      if (last) { ['nome_cognome', 'data_nascita', 'telefono', 'email', 'firma_tecnico'].forEach(k => { if (last.data && last.data.fields && last.data.fields[k]) pf.fields[k] = last.data.fields[k]; }); if (last.data && last.data.radios && last.data.radios.sesso) pf.radios.sesso = last.data.radios.sesso; }
+      pf.fields.data_consulenza = new Date().toISOString().split('T')[0];
+      const nv = { id: gid(), date: pf.fields.data_consulenza, savedAt: new Date().toISOString(), data: pf };
+      if (!client.visits) client.visits = [];
+      client.visits.push(nv); sA(arch); vid = nv.id; clF(); aD(pf); sRO(false); mU(); rVB(client); rCL(); toast('Nuova visita aggiunta');
+    }
+    function newClient() {
+      if (dirty && !confirm('Modifiche non salvate. Continuare?')) return;
+      cid = null; vid = null; clF(); sRO(false); mS();
+      document.getElementById('vbar').classList.remove('on');
+      document.getElementById('photo-sect').classList.remove('on');
+      const s = document.getElementById('tbst'); s.classList.remove('on'); s.textContent = '';
+      if(_dh) _fsWrite('autosave.json',{cid:null,vid:null,data:{}}); else localStorage.removeItem(AK);
+      cSB(); toast('Nuova scheda pronta');
+    }
+    function saveVisit() {
+      if (ro) return;
+      const data = cD(), nome = (data.fields && data.fields.nome_cognome || '').trim();
+      const arch = gA();
+      if (!cid) { cid = gid(); arch[cid] = { profile: { nome_cognome: nome, telefono: data.fields && data.fields.telefono || '', email: data.fields && data.fields.email || '', data_nascita: data.fields && data.fields.data_nascita || '', sesso: data.radios && data.radios.sesso || '' }, visits: [] }; }
+      else if (arch[cid]) { arch[cid].profile = { nome_cognome: nome, telefono: data.fields && data.fields.telefono || arch[cid].profile && arch[cid].profile.telefono || '', email: data.fields && data.fields.email || arch[cid].profile && arch[cid].profile.email || '', data_nascita: data.fields && data.fields.data_nascita || arch[cid].profile && arch[cid].profile.data_nascita || '', sesso: data.radios && data.radios.sesso || arch[cid].profile && arch[cid].profile.sesso || '' }; }
+      const client = arch[cid]; if (!client.visits) client.visits = [];
+      const vd = data.fields && data.fields.data_consulenza || new Date().toISOString().split('T')[0];
+      if (!vid) { vid = gid(); client.visits.push({ id: vid, date: vd, savedAt: new Date().toISOString(), data }); }
+      else { const idx = client.visits.findIndex(v => v.id === vid); if (idx > -1) client.visits[idx] = { id: vid, date: vd, savedAt: new Date().toISOString(), data }; else client.visits.push({ id: vid, date: vd, savedAt: new Date().toISOString(), data }); }
+      sA(arch); mS(); uTB(client); rVB(client); rCL(); toast(nome ? 'Salvato: ' + nome : 'Visita salvata');
+      if(_dh) { _writeScheda(cid); _fsWrite('autosave.json',{cid:null,vid:null,data:{}}); }
+      else localStorage.removeItem(AK);
+    }
+    function delC(id, event) {
+      event.stopPropagation();
+      const arch = gA(), name = cN(arch[id] || {});
+      if (!confirm('Eliminare definitivamente "' + name + '" e tutte le sue visite' + (_dh ? ' e le foto dalla cartella' : '') + '?')) return;
+      delete arch[id]; _deletedClients.add(id); sA(arch);
+      if (cid === id) { cid = null; vid = null; clF(); sRO(false); mS(); document.getElementById('vbar').classList.remove('on'); document.getElementById('photo-sect').classList.remove('on'); if(_dh) _fsWrite('autosave.json',{cid:null,vid:null,data:{}}); else localStorage.removeItem(AK); }
+      _deleteClientDir(id);
+      rCL(); toast('Cliente eliminato');
+    }
+    function uTB(client) { const s = document.getElementById('tbst'); const n = cN(client); s.textContent = n; s.classList.toggle('on', !!n); }
+    function showStats() {
+      cSB(); const arch = gA(), clients = Object.values(arch), aV = clients.flatMap(c => c.visits || []);
+      const today = new Date(); today.setHours(0, 0, 0, 0); const lim = new Date(today); lim.setDate(lim.getDate() + 14);
+      const dueCt = clients.filter(c => { const fu = lVF(c); if (!fu) return false; const d = new Date(fu); return d >= today && d <= lim; }).length;
+      const cards = [{ num: clients.length, label: 'Clienti totali' }, { num: aV.length, label: 'Visite totali' }, { num: clients.filter(c => (c.visits || []).length > 1).length, label: 'Clienti di ritorno' }, { num: dueCt, label: 'Controlli prossimi 14gg' }];
+      const g = document.getElementById('stg'); g.innerHTML = '';
+      cards.forEach(({ num, label }) => { g.innerHTML += '<div class="stc"><div class="stn">' + num + '</div><div class="stl">' + label + '</div></div>'; });
+      const pc = {}; A1.forEach(item => pc[item] = 0);
+      aV.forEach(v => { A1.forEach((item, i) => { if (v.data && v.data.checks && v.data.checks['an1_' + i + '_check']) pc[item]++; }); });
+      const sorted = Object.entries(pc).sort((a, b) => b[1] - a[1]).slice(0, 7), maxP = sorted[0]?.[1] || 1;
+      const sc = { M: 0, F: 0, Altro: 0 }; clients.forEach(c => { const s = c.profile && c.profile.sesso || ''; if (sc[s] !== undefined) sc[s]++; });
+      const r = document.getElementById('str');
+      r.innerHTML = '<div class="stb"><div class="stbt">Problematiche pi&ugrave; frequenti</div>' + sorted.map(([label, count]) => '<div class="stbr"><span class="stbrl">' + label + '</span><div class="stbrtr"><div class="stbrf" style="width:' + Math.round(count / maxP * 100) + '%"></div></div><span class="stbrc">' + count + '</span></div>').join('') + '</div><div class="stb"><div class="stbt">Distribuzione clientela</div>' + Object.entries(sc).map(([s, n]) => '<div class="stbr"><span class="stbrl">' + (s === 'M' ? 'Uomo' : s === 'F' ? 'Donna' : 'Altro') + '</span><div class="stbrtr"><div class="stbrf" style="width:' + (clients.length ? Math.round(n / clients.length * 100) : 0) + '%"></div></div><span class="stbrc">' + n + '</span></div>').join('') + '</div>';
+      document.getElementById('stp').classList.add('on'); window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function hStats() { document.getElementById('stp').classList.remove('on'); }
+    function expJSON() { const data = cD(), nome = (data.fields && data.fields.nome_cognome || 'cliente').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_'), date = data.fields && data.fields.data_consulenza || new Date().toISOString().split('T')[0]; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'Scheda_' + nome + '_' + date + '.json' }); a.click(); URL.revokeObjectURL(a.href); toast('Esportato'); }
+    function impJSON(e) { const file = e.target.files[0]; if (!file) return; const r = new FileReader(); r.onload = ev => { try { const p = JSON.parse(ev.target.result); if (!p.fields) { toast('Usa Ripristina per i backup archivio'); return; } if (dirty && !confirm('Sovrascrivere?')) return; clF(); aD(p); vid = null; mU(); toast('Scheda importata'); } catch { alert('Errore nel file JSON.'); } }; r.readAsText(file); e.target.value = ''; }
+    function bkpAll() { const arch = gA(), count = Object.keys(arch).length; if (!count) { toast('Nessun cliente'); return; } const date = new Date().toISOString().split('T')[0]; const blob = new Blob([JSON.stringify(arch, null, 2)], { type: 'application/json' }); const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'Archivio_Tricologico_' + date + '.json' }); a.click(); URL.revokeObjectURL(a.href); toast('Backup: ' + count + ' clienti'); }
+    function restBkp(e) { const file = e.target.files[0]; if (!file) return; const r = new FileReader(); r.onload = ev => { try { const p = JSON.parse(ev.target.result); const keys = Object.keys(p); if (!keys.length) { alert('File vuoto.'); return; } if (!confirm('Ripristinare ' + keys.length + ' clienti? L\'archivio attuale sar\u00e0 sovrascritto.')) return; _saDirect(p); cid = null; vid = null; clF(); sRO(false); mS(); document.getElementById('vbar').classList.remove('on'); document.getElementById('photo-sect').classList.remove('on'); const si=document.getElementById('sbsi'); if(si) si.value=''; rCL(); toast('Ripristino: ' + keys.length + ' clienti'); } catch { alert('Errore nel file JSON.'); } }; r.readAsText(file); e.target.value = ''; }
+    function switchTab(tab) {
+      document.getElementById('panel-clienti').style.display = tab === 'clienti' ? 'flex' : 'none';
+      document.getElementById('panel-scadenze').style.display = tab === 'scadenze' ? 'flex' : 'none';
+      document.getElementById('panel-agenda').style.display = tab === 'agenda' ? 'flex' : 'none';
+      document.getElementById('tab-clienti').classList.toggle('active', tab === 'clienti');
+      document.getElementById('tab-scadenze').classList.toggle('active', tab === 'scadenze');
+      document.getElementById('tab-agenda').classList.toggle('active', tab === 'agenda');
+      if (tab === 'agenda') renderSidebarAgenda();
+    }
+
+    /* ═══════════════ AGENDA ═══════════════ */
+    const AGK = 'trico_agenda_v1';
+    let agendaYear = new Date().getFullYear();
+    let agendaMonth = new Date().getMonth();
+    let agendaSelDate = null;
+    let editingApptId = null;
+
+    function gAg() { return _ag; }
+    function sAg(a) { _ag = a; if (_dh) _fsWrite('agenda.json', a); else localStorage.setItem(AGK, JSON.stringify(a)); }
+
+    function openAgenda() {
+      const now = new Date();
+      agendaYear = now.getFullYear(); agendaMonth = now.getMonth();
+      agendaSelDate = now.toISOString().split('T')[0];
+      renderAgendaCal(); renderAgendaDay(agendaSelDate);
+      document.getElementById('agenda-ov').classList.add('open');
+    }
+    function closeAgenda() { document.getElementById('agenda-ov').classList.remove('open'); }
+    function agendaPrevMonth() { if (--agendaMonth < 0) { agendaMonth = 11; agendaYear--; } renderAgendaCal(); }
+    function agendaNextMonth() { if (++agendaMonth > 11) { agendaMonth = 0; agendaYear++; } renderAgendaCal(); }
+
+    const MONTHS_IT = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+    const DAYS_IT = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+    const MONTHS_IT_GEN = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+
+    function renderAgendaCal() {
+      document.getElementById('agenda-month-lbl').textContent = MONTHS_IT[agendaMonth] + ' ' + agendaYear;
+      const ag = gAg();
+      const apptDates = new Set(Object.values(ag).map(a => a.date));
+      const grid = document.getElementById('agenda-cal-days');
+      grid.innerHTML = '';
+      const today = new Date(); today.setHours(0,0,0,0);
+      const todayStr = today.toISOString().split('T')[0];
+      const first = new Date(agendaYear, agendaMonth, 1);
+      const lastDay = new Date(agendaYear, agendaMonth + 1, 0).getDate();
+      let startDow = (first.getDay() + 6) % 7; // 0=Mon
+      for (let i = 0; i < startDow; i++) {
+        const d = new Date(agendaYear, agendaMonth, 1 - (startDow - i));
+        grid.appendChild(mkDayCell(d.getDate(), d.toISOString().split('T')[0], true, false, false, false));
+      }
+      for (let d = 1; d <= lastDay; d++) {
+        const ds = agendaYear + '-' + String(agendaMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+        grid.appendChild(mkDayCell(d, ds, false, ds === todayStr, ds === agendaSelDate, apptDates.has(ds)));
+      }
+      const total = Math.ceil((startDow + lastDay) / 7) * 7;
+      for (let i = 1; i <= total - startDow - lastDay; i++) {
+        const d = new Date(agendaYear, agendaMonth + 1, i);
+        grid.appendChild(mkDayCell(i, d.toISOString().split('T')[0], true, false, false, false));
+      }
+    }
+
+    function mkDayCell(num, ds, other, isToday, isSel, hasDot) {
+      const c = document.createElement('div');
+      c.className = 'agenda-day' + (other ? ' other-month' : '') + (isToday ? ' today' : '') + (isSel ? ' selected' : '');
+      c.innerHTML = '<span class="agenda-day-num">' + num + '</span>' + (hasDot ? '<div class="agenda-day-dots"><div class="agenda-day-dot"></div></div>' : '');
+      c.onclick = () => { agendaSelDate = ds; renderAgendaCal(); renderAgendaDay(ds); };
+      return c;
+    }
+
+    function renderAgendaDay(ds) {
+      const lbl = document.getElementById('agenda-day-lbl');
+      const panel = document.getElementById('agenda-appts');
+      if (!ds) { panel.innerHTML = '<div class="agenda-empty-day">Seleziona un giorno.</div>'; return; }
+      const d = new Date(ds + 'T12:00:00');
+      lbl.textContent = DAYS_IT[d.getDay()] + ', ' + d.getDate() + ' ' + MONTHS_IT_GEN[d.getMonth()] + ' ' + d.getFullYear();
+      const ag = gAg();
+      const dayAppts = Object.entries(ag).filter(([,a]) => a.date === ds).sort((a,b) => (a[1].time||'').localeCompare(b[1].time||''));
+      if (!dayAppts.length) {
+        panel.innerHTML = '<div class="agenda-empty-day">Nessun appuntamento per questo giorno.<br><em>Premi + Nuova prenotazione per aggiungerne uno.</em></div>';
+        return;
+      }
+      panel.innerHTML = '';
+      dayAppts.forEach(([id, appt]) => {
+        const card = document.createElement('div'); card.className = 'appt-card';
+        card.innerHTML = '<div class="appt-time-block"><div class="appt-time">' + (appt.time||'--:--') + '</div><div class="appt-dur">' + (appt.duration||60) + '\'</div></div>' +
+          '<div class="appt-info"><div class="appt-client-name">' + (appt.clientName||'—') + '</div>' +
+          '<div class="appt-service-tag">' + (appt.service||'') + '</div>' +
+          (appt.notes ? '<div class="appt-notes-prev">' + appt.notes + '</div>' : '') + '</div>';
+        card.onclick = () => openEditAppt(id);
+        panel.appendChild(card);
+      });
+    }
+
+    function openNewAppt() {
+      editingApptId = null;
+      document.getElementById('appt-date').value = agendaSelDate || new Date().toISOString().split('T')[0];
+      document.getElementById('appt-time').value = '09:00';
+      document.getElementById('appt-duration').value = '60';
+      document.getElementById('appt-service').value = 'Consulenza Tricologica';
+      document.getElementById('appt-client').value = '';
+      document.getElementById('appt-notes').value = '';
+      document.getElementById('appt-del-btn').style.display = 'none';
+      document.getElementById('appt-modal-title').textContent = 'Nuova Prenotazione';
+      populateClientDL();
+      document.getElementById('appt-modal-ov').classList.add('open');
+    }
+
+    function openEditAppt(id) {
+      editingApptId = id;
+      const ag = gAg(); const appt = ag[id]; if (!appt) return;
+      document.getElementById('appt-date').value = appt.date || '';
+      document.getElementById('appt-time').value = appt.time || '09:00';
+      document.getElementById('appt-duration').value = String(appt.duration || 60);
+      document.getElementById('appt-service').value = appt.service || 'Consulenza Tricologica';
+      document.getElementById('appt-client').value = appt.clientName || '';
+      document.getElementById('appt-notes').value = appt.notes || '';
+      document.getElementById('appt-del-btn').style.display = 'inline-flex';
+      document.getElementById('appt-modal-title').textContent = 'Modifica Prenotazione';
+      populateClientDL();
+      document.getElementById('appt-modal-ov').classList.add('open');
+    }
+
+    function closeApptModal() { document.getElementById('appt-modal-ov').classList.remove('open'); }
+
+    function populateClientDL() {
+      const dl = document.getElementById('appt-client-list'); dl.innerHTML = '';
+      Object.values(gA()).forEach(c => { const o = document.createElement('option'); o.value = cN(c); dl.appendChild(o); });
+    }
+
+    function saveAppt() {
+      const clientName = document.getElementById('appt-client').value.trim();
+      const date = document.getElementById('appt-date').value;
+      const time = document.getElementById('appt-time').value;
+      const duration = parseInt(document.getElementById('appt-duration').value) || 60;
+      const service = document.getElementById('appt-service').value;
+      const notes = document.getElementById('appt-notes').value.trim();
+      if (!date) { toast('Inserisci una data'); return; }
+      if (!clientName) { toast('Inserisci il nome del cliente'); return; }
+      const ag = gAg();
+      const id = editingApptId || gid();
+      const prev = ag[id] || {};
+      ag[id] = { clientName, date, time, duration, service, notes, createdAt: prev.createdAt || new Date().toISOString() };
+      sAg(ag);
+      closeApptModal();
+      agendaSelDate = date;
+      const d = new Date(date + 'T12:00:00');
+      agendaYear = d.getFullYear(); agendaMonth = d.getMonth();
+      renderAgendaCal(); renderAgendaDay(date);
+      toast('Prenotazione salvata');
+    }
+
+    function deleteCurrentAppt() {
+      if (!editingApptId) return;
+      if (!confirm('Eliminare questa prenotazione?')) return;
+      const ag = gAg(); delete ag[editingApptId]; sAg(ag);
+      editingApptId = null;
+      closeApptModal();
+      renderAgendaCal(); renderAgendaDay(agendaSelDate);
+      toast('Prenotazione eliminata');
+    }
+
+    function renderSidebarAgenda() {
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      const dateLbl = document.getElementById('sb-ag-date-lbl');
+      if (dateLbl) dateLbl.textContent = today.getDate() + ' ' + MONTHS_IT_GEN[today.getMonth()] + ' ' + today.getFullYear();
+      const list = document.getElementById('sb-ag-list');
+      if (!list) return;
+      const ag = gAg();
+      const todayAppts = Object.entries(ag)
+        .filter(([,a]) => a.date === todayStr)
+        .sort((a,b) => (a[1].time||'').localeCompare(b[1].time||''));
+      const badge = document.getElementById('sbtab-agenda-badge');
+      if (badge) {
+        if (todayAppts.length) { badge.textContent = todayAppts.length; badge.classList.add('visible'); }
+        else { badge.classList.remove('visible'); }
+      }
+      if (!todayAppts.length) {
+        list.innerHTML = '<div class="sb-ag-empty">Nessun appuntamento oggi.<br><em>Apri l\'agenda per aggiungerne uno.</em></div>';
+        return;
+      }
+      list.innerHTML = todayAppts.map(([, a]) =>
+        '<div class="sb-appt-item" onclick="openAgenda();cSB()">' +
+        '<div class="sb-appt-time">' + (a.time || '--:--') + '</div>' +
+        '<div class="sb-appt-info">' +
+        '<div class="sb-appt-name">' + (a.clientName || '&mdash;') + '</div>' +
+        '<div class="sb-appt-svc">' + (a.service || '') + '</div>' +
+        '</div></div>'
+      ).join('');
+    }
+    /* ═══ FILE SYSTEM STORAGE MODULE ═══ */
+    function _idbOpen() {
+      return new Promise((res,rej)=>{ const r=indexedDB.open('trico_fs1',1); r.onupgradeneeded=e=>e.target.result.createObjectStore('kv'); r.onsuccess=e=>res(e.target.result); r.onerror=rej; });
+    }
+    async function _idbGet(k) { try { const db=await _idbOpen(); return new Promise((res,rej)=>{ const t=db.transaction('kv','readonly'),r=t.objectStore('kv').get(k); r.onsuccess=()=>res(r.result); r.onerror=rej; }); } catch { return null; } }
+    async function _idbSet(k,v) { try { const db=await _idbOpen(); return new Promise((res,rej)=>{ const t=db.transaction('kv','readwrite'); t.objectStore('kv').put(v,k); t.oncomplete=res; t.onerror=rej; }); } catch {} }
+
+    async function _fsRead(name, fallback) { try { const fh=await _dh.getFileHandle(name); return JSON.parse(await(await fh.getFile()).text()); } catch { return fallback; } }
+    async function _fsWrite(name, data) { if(!_dh) return; try { const fh=await _dh.getFileHandle(name,{create:true}),w=await fh.createWritable(); await w.write(JSON.stringify(data,null,2)); await w.close(); } catch(e){console.warn('fsWrite',name,e);} }
+
+    /* ── SYNC ENGINE ── */
+    let _syncTimer=null, _syncing=false;
+    async function _doSync(manual=false) {
+      if(!_dh||!_fsOk||_syncing) return;
+      _syncing=true;
+      try {
+        const [diskArch,diskAg]=await Promise.all([_fsRead('archivio.json',null),_fsRead('agenda.json',null)]);
+        let changed=false;
+        if(diskArch&&typeof diskArch==='object') {
+          const merged={...diskArch};
+          for(const id of _deletedClients) delete merged[id];
+          if(JSON.stringify(merged)!==JSON.stringify(_arch)) {
+            if(cid&&!merged[cid]) {
+              cid=null;vid=null;clF();sRO(false);mS();
+              document.getElementById('vbar').classList.remove('on');
+              document.getElementById('photo-sect').classList.remove('on');
+              toast('Cliente rimosso su un altro dispositivo');
+            }
+            _arch=merged; rCL(); rFU(); changed=true;
+          }
+        }
+        if(diskAg&&typeof diskAg==='object'&&JSON.stringify(diskAg)!==JSON.stringify(_ag)) {
+          _ag=diskAg; renderSidebarAgenda(); changed=true;
+        }
+        if(changed) _flashChip();
+        else if(manual) toast('Già sincronizzato');
+      } catch{}
+      _syncing=false;
+    }
+    function _flashChip() {
+      const el=document.getElementById('fs-status');
+      if(!el) return;
+      el.style.opacity='0.4';
+      setTimeout(()=>el.style.opacity='',400);
+    }
+    function _startSync() { _stopSync(); _syncTimer=setInterval(()=>_doSync(),15000); }
+    function _stopSync() { if(_syncTimer){clearInterval(_syncTimer);_syncTimer=null;} }
+
+    function _upFSStatus() {
+      const el=document.getElementById('fs-status');
+      const banner=document.getElementById('fs-banner');
+      const bTitle=document.getElementById('fsb-title');
+      const bSub=document.getElementById('fsb-sub');
+      const bBtn=document.getElementById('fsb-btn');
+      if(_fsOk && _dh) {
+        if(el) el.innerHTML='<button class="fs-chip connected" onclick="_doSync(true)" title="Clicca per sincronizzare ora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>'+(_dh.name||'Cartella')+'</button>';
+        if(banner) banner.style.display='none';
+      } else if(!window.showDirectoryPicker) {
+        if(el) el.innerHTML='<button class="fs-chip unsupported" onclick="openFSModal()" style="cursor:pointer">Solo browser</button>';
+        if(banner) { banner.style.display='';
+          if(bTitle) bTitle.textContent='Salvataggio su file non disponibile';
+          if(bSub) bSub.textContent='Su Brave: clicca il leone \u{1F9F7} → disattiva Shields per questa pagina → ricarica. Oppure apri il file con Chrome o Edge.';
+          if(bBtn) { bBtn.textContent='Come fare'; bBtn.onclick=openFSModal; }
+        }
+      } else {
+        if(el) el.innerHTML='<button class="fs-chip disconnected" onclick="openFSModal()">&#9888; Nessuna cartella</button>';
+        if(banner) { banner.style.display='';
+          if(bTitle) bTitle.textContent='Nessuna cartella collegata';
+          if(bSub) bSub.textContent='I dati sono salvati solo nel browser. Collega una cartella Google Drive o Dropbox per salvarli su disco.';
+          if(bBtn) { bBtn.textContent='Connetti cartella'; bBtn.onclick=openFSModal; }
+        }
+      }
+    }
+
+    let _isBraveCache=null;
+    async function _isBrave(){if(_isBraveCache!==null)return _isBraveCache;try{_isBraveCache=!!(await navigator.brave?.isBrave());}catch{_isBraveCache=false;}return _isBraveCache;}
+    function _applyBraveNote(){
+      const note=document.querySelector('.fs-modal-note'),btn=document.querySelector('.fs-connect-btn');
+      if(note) note.innerHTML='<b style="color:rgba(200,169,110,0.85);font-size:7.5px;letter-spacing:1.5px">&#9888;&nbsp;BRAVE SHIELDS BLOCCA L\'ACCESSO AI FILE</b><br><br><b>Per abilitare:</b><br>1. Clicca l\'icona del <b>leone &#129466;</b> in alto a destra nel browser<br>2. Disattiva <b>Shields</b> per questa pagina (toggle su OFF)<br>3. La pagina si ricarica — poi clicca di nuovo <b>Seleziona cartella</b><br><br><b>In alternativa:</b> apri il file con <b>Chrome</b> o <b>Edge</b>.';
+      if(btn) btn.style.display='';
+    }
+    async function openFSModal() {
+      const cur=document.getElementById('fs-modal-cur'), val=document.getElementById('fs-modal-cur-val');
+      if(_dh && cur && val) { cur.style.display='block'; val.textContent=_dh.name||'Cartella'; }
+      else if(cur) { cur.style.display='none'; }
+      // Show reconnect button if there's a saved handle but no active connection
+      const reconnEl=document.getElementById('fs-reconnect');
+      if(!_dh && reconnEl) {
+        const savedH=await _idbGet('dh');
+        if(savedH) {
+          reconnEl.style.display='';
+          const nameEl=document.getElementById('fs-reconnect-name');
+          if(nameEl) nameEl.textContent=savedH.name||'Cartella precedente';
+        } else { reconnEl.style.display='none'; }
+      } else if(reconnEl) { reconnEl.style.display='none'; }
+      const brave=await _isBrave();
+      if(brave && !window.showDirectoryPicker) {
+        _applyBraveNote();
+      } else {
+        const note=document.querySelector('.fs-modal-note');
+        const btn=document.querySelector('.fs-connect-btn');
+        if(note) note.innerHTML='<b>Google Drive / Dropbox:</b> clicca &ldquo;Seleziona cartella&rdquo; &rarr; naviga nella cartella sincronizzata di Google Drive o Dropbox sul tuo computer &rarr; conferma.<br><br>Su Brave: disabilita Shields (leone &#129466; in alto a destra) per questa pagina e ricarica.';
+        if(btn) btn.style.display='';
+      }
+      document.getElementById('fs-modal-ov').classList.add('open');
+    }
+    async function reconnectFolder() {
+      const h=await _idbGet('dh'); if(!h) { toast('Nessuna cartella salvata'); return; }
+      try {
+        const p=await h.requestPermission({mode:'readwrite'});
+        if(p==='granted') { _dh=h; await _loadFolder(); _upFSStatus(); closeFSModal(); toast('Cartella riconnessa'); }
+        else { toast('Permesso negato — usa "Seleziona cartella"'); }
+      } catch(e) { if(e.name!=='AbortError') toast('Errore — usa "Seleziona cartella"'); }
+    }
+    function closeFSModal() { document.getElementById('fs-modal-ov').classList.remove('open'); }
+
+    async function _loadFolder() {
+      _deletedClients = new Set();
+      const archFile=await _fsRead('archivio.json',null);
+      const agFile=await _fsRead('agenda.json',null);
+      if(archFile!==null) { _arch=archFile; } else { await _fsWrite('archivio.json',_arch); }
+      if(agFile!==null) { _ag=agFile; } else { await _fsWrite('agenda.json',_ag); }
+      try { _cDirMap=await _fsRead('_clienti_dirs.json',{}); } catch { _cDirMap={}; }
+      localStorage.removeItem(SK); localStorage.removeItem(AGK); localStorage.removeItem(AK);
+      _fsOk=true; _upFSStatus(); rCL(); rFU(); _startSync();
+      const as=await _fsRead('autosave.json',null);
+      if(as && as.data && as.cid && _arch[as.cid]) { aD(as.data); cid=as.cid; vid=as.vid||null; uTB(_arch[as.cid]); rVB(_arch[as.cid]); sRO(false); dirty=true; document.getElementById('udot').classList.add('on'); document.getElementById('photo-sect').classList.add('on'); renderPhotos(as.cid); }
+    }
+
+    async function connectFolder() {
+      if(!window.showDirectoryPicker) {
+        const brave=await _isBrave();
+        if(brave) { _applyBraveNote(); document.getElementById('fs-modal-ov').classList.add('open'); }
+        else { toast('Usa Chrome o Edge per selezionare una cartella'); }
+        return;
+      }
+      try {
+        const h=await window.showDirectoryPicker({mode:'readwrite'});
+        _dh=h; await _idbSet('dh',h);
+        await _loadFolder(); _upFSStatus();
+        closeFSModal(); toast('Cartella connessa');
+      } catch(e) {
+        if(e.name==='AbortError') return;
+        if(e.name==='SecurityError'||e.name==='NotAllowedError') {
+          _applyBraveNote(); document.getElementById('fs-modal-ov').classList.add('open');
+        } else { toast('Errore accesso cartella'); }
+      }
+    }
+
+    function _loadFromLS() {
+      try { _arch=JSON.parse(localStorage.getItem(SK)||'null')||{}; } catch { _arch={}; }
+      try { _ag=JSON.parse(localStorage.getItem(AGK)||'null')||{}; } catch { _ag={}; }
+      _fsOk=true; rCL(); rFU();
+      try { const as=JSON.parse(localStorage.getItem(AK)||'null'); if(as&&as.data&&as.cid&&_arch[as.cid]){ aD(as.data); cid=as.cid; vid=as.vid||null; uTB(_arch[as.cid]); rVB(_arch[as.cid]); sRO(false); dirty=true; document.getElementById('udot').classList.add('on'); document.getElementById('photo-sect').classList.add('on'); } } catch(e){ console.warn(e); }
+    }
+
+    // ── PHOTO FUNCTIONS ──
+    let _cDirMap = {};
+    function _safeName(s) { return (s||'').replace(/[<>:"/\\|?*\x00-\x1f]/g,'').replace(/\.+$/,'').trim(); }
+    async function _getClientDir(clientId, create=false) {
+      if(!_dh) return null;
+      try {
+        const base=await _dh.getDirectoryHandle('clienti',{create:true});
+        let fn=_cDirMap[clientId];
+        if(!fn) {
+          const arch=gA(), client=arch[clientId];
+          let name=_safeName(client?.profile?.nome_cognome||'');
+          if(!name) name=clientId.slice(-8);
+          const used=new Set(Object.values(_cDirMap));
+          if(used.has(name)) name=name+' '+clientId.slice(-4);
+          _cDirMap[clientId]=name; await _fsWrite('_clienti_dirs.json',_cDirMap); fn=name;
+        }
+        return await base.getDirectoryHandle(fn,{create});
+      } catch { return null; }
+    }
+    async function _writeScheda(clientId) {
+      const dir=await _getClientDir(clientId,true); if(!dir) return;
+      const arch=gA(), client=arch[clientId]; if(!client) return;
+      try { const fh=await dir.getFileHandle('scheda.json',{create:true}),w=await fh.createWritable(); await w.write(JSON.stringify({cid:clientId,...client},null,2)); await w.close(); } catch {}
+    }
+    async function _listPhotos(clientId) {
+      const dir=await _getClientDir(clientId); if(!dir) return [];
+      const results=[];
+      try {
+        for await (const [dname,dh] of dir.entries()) {
+          if(dh.kind==='directory'&&/^\d{4}-\d{2}-\d{2}$/.test(dname)) {
+            for await (const [fname] of dh.entries()) { if(/\.(jpg|jpeg|png|webp|gif|heic)$/i.test(fname)) results.push({date:dname,filename:fname}); }
+          }
+        }
+      } catch {}
+      return results.sort((a,b)=>a.date.localeCompare(b.date)||a.filename.localeCompare(b.filename));
+    }
+    async function _readPhoto(clientId,dateStr,filename) {
+      try { const dir=await _getClientDir(clientId); if(!dir) return null; const dd=await dir.getDirectoryHandle(dateStr); return await (await dd.getFileHandle(filename)).getFile(); } catch { return null; }
+    }
+    async function _writePhoto(clientId,dateStr,filename,file) {
+      try { const dir=await _getClientDir(clientId,true),dd=await dir.getDirectoryHandle(dateStr,{create:true}),fh=await dd.getFileHandle(filename,{create:true}),w=await fh.createWritable(); await w.write(file); await w.close(); return true; } catch { return false; }
+    }
+    async function _deletePhoto(clientId,dateStr,filename) {
+      try { const dir=await _getClientDir(clientId),dd=await dir.getDirectoryHandle(dateStr); await dd.removeEntry(filename); } catch {}
+    }
+    async function _deleteClientDir(clientId) {
+      if(!_dh) return;
+      const fn=_cDirMap[clientId]; if(!fn) return;
+      try {
+        const base=await _dh.getDirectoryHandle('clienti');
+        await base.removeEntry(fn,{recursive:true});
+        delete _cDirMap[clientId];
+        await _fsWrite('_clienti_dirs.json',_cDirMap);
+      } catch(e) { console.warn('deleteClientDir',e); }
+    }
+    function triggerPhotoUpload() {
+      if(!_dh) { toast('Connetti una cartella per usare le foto'); return; }
+      if(!cid) { toast('Apri prima un cliente'); return; }
+      document.getElementById('photo-file-input').click();
+    }
+    async function handlePhotoUpload(ev) {
+      const files=[...ev.target.files]; ev.target.value=''; if(!files.length||!cid) return;
+      const today=new Date().toISOString().split('T')[0];
+      const existing=(await _listPhotos(cid)).filter(p=>p.date===today);
+      let count=existing.length, saved=0;
+      for(const file of files) {
+        const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+        count++;
+        if(await _writePhoto(cid,today,`${String(count).padStart(3,'0')}.${ext}`,file)) saved++;
+      }
+      if(saved) { toast(`${saved} foto salvata${saved>1?'e':''}`); renderPhotos(cid); }
+      else toast('Errore salvataggio foto');
+    }
+    async function renderPhotos(clientId) {
+      const grid=document.getElementById('photo-grid'); if(!grid) return;
+      grid.querySelectorAll('img[src^="blob:"]').forEach(img=>URL.revokeObjectURL(img.src));
+      grid.innerHTML='';
+      if(!_dh) { grid.innerHTML='<div class="photo-msg">Connetti una cartella per salvare e visualizzare le foto.</div>'; return; }
+      const photos=await _listPhotos(clientId);
+      if(!photos.length) {
+        grid.innerHTML=`<div class="photo-drop-zone" onclick="triggerPhotoUpload()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="this.classList.remove('drag-over');handlePhotoDrop(event)"><div class="photo-drop-zone-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/><line x1="12" y1="2" x2="12" y2="8"/><polyline points="9 5 12 2 15 5"/></svg></div><div class="photo-drop-zone-lbl">Carica foto</div><div class="photo-drop-zone-sub">Clicca oppure trascina le immagini qui</div></div>`;
+        return;
+      }
+      for(const {date,filename} of photos) {
+        const blob=await _readPhoto(clientId,date,filename); if(!blob) continue;
+        const url=URL.createObjectURL(blob);
+        const div=document.createElement('div'); div.className='photo-thumb';
+        div.innerHTML=`<img src="${url}" alt="${filename}" loading="lazy" onclick="openPhotoLb('${url}','${date}/${filename}')"><span class="photo-thumb-date">${date}</span><button class="photo-thumb-del" onclick="delPhoto('${clientId}','${date}','${filename}',this)">&#215;</button>`;
+        grid.appendChild(div);
+      }
+    }
+    async function handlePhotoDrop(ev) {
+      ev.preventDefault();
+      if(!_dh||!cid) return;
+      const files=[...ev.dataTransfer.files].filter(f=>f.type.startsWith('image/'));
+      if(!files.length) return;
+      const today=new Date().toISOString().split('T')[0];
+      const existing=(await _listPhotos(cid)).filter(p=>p.date===today);
+      let count=existing.length, saved=0;
+      for(const file of files) {
+        const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+        count++;
+        if(await _writePhoto(cid,today,`${String(count).padStart(3,'0')}.${ext}`,file)) saved++;
+      }
+      if(saved) { toast(`${saved} foto salvata${saved>1?'e':''}`); renderPhotos(cid); }
+      else toast('Errore salvataggio foto');
+    }
+    async function delPhoto(clientId,dateStr,filename,btn) {
+      if(!confirm('Eliminare questa foto?')) return;
+      btn.closest('.photo-thumb').remove(); await _deletePhoto(clientId,dateStr,filename); toast('Foto eliminata');
+    }
+    function openPhotoLb(url,name) {
+      document.getElementById('photo-lb-img').src=url;
+      document.getElementById('photo-lb-name').textContent=name;
+      document.getElementById('photo-lb').classList.add('open');
+    }
+    function closePhotoLb() { document.getElementById('photo-lb').classList.remove('open'); }
+
+    async function initApp() {
+      bG(A1,'ag','an1'); bG(A2,'ag2','an2'); bA();
+      window.addEventListener('beforeunload',e=>{ if(dirty){ e.preventDefault(); e.returnValue=''; } });
+      _loadFromLS(); _upFSStatus();
+      if(!window.showDirectoryPicker) return;
+      try {
+        const h=await _idbGet('dh');
+        if(h) {
+          let p=await h.queryPermission({mode:'readwrite'});
+          if(p==='prompt') p=await h.requestPermission({mode:'readwrite'});
+          if(p==='granted') { _dh=h; await _loadFolder(); _upFSStatus(); return; }
+        }
+      } catch {}
+      _upFSStatus(); setTimeout(openFSModal, 300);
+    }
+    initApp();
+  </script>
+</body>
+
+</html>
